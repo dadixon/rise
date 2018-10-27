@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="IZE-qZ-814">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Add Note View Controller-->
+        <scene sceneID="kCV-WP-1WO">
+            <objects>
+                <viewController id="IZE-qZ-814" customClass="AddNoteViewController" customModule="Rise" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="azL-KN-RcK">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="cuI-Yc-Y2y">
+                                <rect key="frame" x="16" y="101" width="343" height="226"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="226" id="s6B-il-5Wx"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GhV-xR-nQW">
+                                <rect key="frame" x="16" y="406" width="343" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="hCq-mE-JsO"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="saveNoteClicked:" destination="IZE-qZ-814" eventType="touchUpInside" id="PaE-9t-uth"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fy7-KS-PQB">
+                                <rect key="frame" x="77" y="355" width="221" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="dateFieldClicked:" destination="IZE-qZ-814" eventType="editingDidBegin" id="t0j-9v-pWt"/>
+                                </connections>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="GhV-xR-nQW" firstAttribute="centerX" secondItem="azL-KN-RcK" secondAttribute="centerX" id="1ts-jh-ONM"/>
+                            <constraint firstItem="cuI-Yc-Y2y" firstAttribute="top" secondItem="cuD-82-mhf" secondAttribute="top" constant="37" id="PkP-Cm-fjo"/>
+                            <constraint firstItem="Fy7-KS-PQB" firstAttribute="centerX" secondItem="azL-KN-RcK" secondAttribute="centerX" id="X7w-DZ-jfR"/>
+                            <constraint firstItem="Fy7-KS-PQB" firstAttribute="top" secondItem="cuI-Yc-Y2y" secondAttribute="bottom" constant="28" id="YTC-NI-QpQ"/>
+                            <constraint firstItem="cuI-Yc-Y2y" firstAttribute="centerX" secondItem="azL-KN-RcK" secondAttribute="centerX" id="h21-on-EqF"/>
+                            <constraint firstItem="GhV-xR-nQW" firstAttribute="top" secondItem="Fy7-KS-PQB" secondAttribute="bottom" constant="21" id="lSS-XB-rSd"/>
+                            <constraint firstItem="cuD-82-mhf" firstAttribute="trailing" secondItem="Fy7-KS-PQB" secondAttribute="trailing" constant="77" id="mpb-sy-qdU"/>
+                            <constraint firstItem="GhV-xR-nQW" firstAttribute="leading" secondItem="cuD-82-mhf" secondAttribute="leading" constant="16" id="rkk-qe-3BT"/>
+                            <constraint firstItem="cuD-82-mhf" firstAttribute="trailing" secondItem="cuI-Yc-Y2y" secondAttribute="trailing" constant="16" id="rvQ-i5-pNv"/>
+                            <constraint firstItem="Fy7-KS-PQB" firstAttribute="leading" secondItem="cuD-82-mhf" secondAttribute="leading" constant="77" id="s2Y-gj-bKo"/>
+                            <constraint firstItem="cuI-Yc-Y2y" firstAttribute="leading" secondItem="cuD-82-mhf" secondAttribute="leading" constant="16" id="tcm-9H-jCD"/>
+                            <constraint firstItem="cuD-82-mhf" firstAttribute="trailing" secondItem="GhV-xR-nQW" secondAttribute="trailing" constant="16" id="tui-nQ-oay"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="cuD-82-mhf"/>
+                    </view>
+                    <connections>
+                        <outlet property="createdDate" destination="Fy7-KS-PQB" id="5fM-SE-bkS"/>
+                        <outlet property="noteTextArea" destination="cuI-Yc-Y2y" id="3zf-9u-GJ1"/>
+                        <outlet property="saveBtn" destination="GhV-xR-nQW" id="UpB-Up-X3f"/>
+                        <segue destination="aMQ-pD-Gcc" kind="unwind" identifier="unwindToEmployeeDetails" unwindAction="unwindToEmployeesDetailsWithSegue:" id="aeF-vr-8QR"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tob-2T-2hD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="aMQ-pD-Gcc" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="1849" y="-247"/>
+        </scene>
+    </scenes>
+</document>
