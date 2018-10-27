@@ -164,18 +164,18 @@ class SettingsViewController: FormViewController {
                 }.onCellSelection({ (cell, row) in
                     print("Logout")
                 })
-            +++ Section("Pre-fill")
-            <<< ButtonRow { row in
-                row.title = "Print Values"
-                }.onCellSelection({ [unowned self] (cell, row) in
-                    print(self.form.values())
-                    print(UserDefaults.useTimeManagedReminder)
-                    print(UserDefaults.timeManagedReminder)
-//                    print(FormData.repeatFreq)
-                    print(UserDefaults.reminderStartDays)
-                    print(UserDefaults.storeDays)
-                    print(UserDefaults.sortOrder)
-                })
+//            +++ Section("Pre-fill")
+//            <<< ButtonRow { row in
+//                row.title = "Print Values"
+//                }.onCellSelection({ [unowned self] (cell, row) in
+//                    print(self.form.values())
+//                    print(UserDefaults.useTimeManagedReminder)
+//                    print(UserDefaults.timeManagedReminder)
+////                    print(FormData.repeatFreq)
+//                    print(UserDefaults.reminderStartDays)
+//                    print(UserDefaults.storeDays)
+//                    print(UserDefaults.sortOrder)
+//                })
     }
     
     private func registerNotification() {

@@ -32,6 +32,9 @@ class AddNoteViewController: UIViewController {
         createdDate.text = dateFormatter.string(from: Date())
         editNote = false
         
+        noteTextArea.layer.borderColor = UIColor.black.cgColor
+        noteTextArea.layer.borderWidth = 1.0
+        
         if note != nil {
             editNote = true
             noteTextArea.text = note.text

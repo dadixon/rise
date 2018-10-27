@@ -100,12 +100,14 @@ class EmployeeDetailsViewController: UIViewController {
     func updateLatestNote() {
         let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
         
-        employee.latest = notes[0].created
-        
-        do {
-            try context.save()
-        } catch {
-            SVProgressHUD.showSuccess(withStatus: "Note has been deleted")
+        if notes.count > 0 {
+            employee.latest = notes[0].created
+            
+            do {
+                try context.save()
+            } catch {
+                SVProgressHUD.showSuccess(withStatus: "Note has been deleted")
+            }
         }
     }
     
@@ -130,7 +132,6 @@ class EmployeeDetailsViewController: UIViewController {
     }
     
     @objc func addNoteClicked() {
-        print("Clicked")
         performSegue(withIdentifier: "showAddNote", sender: nil)
     }
     
@@ -169,6 +170,7 @@ extension EmployeeDetailsViewController: UITableViewDelegate {
                     
                     self.deleteNote(note: self.notes[indexPath.row])
                     self.notes.remove(at: indexPath.row)
+                    self.employeeDetailsLabel.text = self.setNoteDetails(count: self.notes.count, days: self.userDefault.integer(forKey: "days"))
                     self.updateLatestNote()
                     
                     tableView.deleteRows(at: [indexPath], with: .automatic)
