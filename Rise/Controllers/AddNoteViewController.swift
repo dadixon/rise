@@ -22,6 +22,7 @@ class AddNoteViewController: UIViewController {
     var employee = Employee()
     var note: Note!
     var editNote: Bool!
+    var backTo: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,7 +109,11 @@ class AddNoteViewController: UIViewController {
             saveNote()
         }
         
-        performSegue(withIdentifier: "unwindToEmployeeDetails", sender: self)
+        if backTo == "Dashboard" {
+            performSegue(withIdentifier: "unwindToEmployeeDashboard", sender: self)
+        } else if backTo == "Details" {
+            performSegue(withIdentifier: "unwindToEmployeeDetails", sender: self)
+        }
     }
     
     @IBAction func dateFieldClicked(_ sender: Any) {

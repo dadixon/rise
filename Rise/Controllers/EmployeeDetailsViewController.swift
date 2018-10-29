@@ -150,6 +150,7 @@ class EmployeeDetailsViewController: UIViewController {
                 
             vc.employee = employee
             vc.note = selectedNote
+            vc.backTo = "Details"
         }
     }
     

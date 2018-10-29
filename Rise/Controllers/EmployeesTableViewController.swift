@@ -276,6 +276,7 @@ class EmployeesTableViewController: UITableViewController {
                 }
                 
                 vc.employee = employee
+                vc.backTo = "Dashboard"
             }
         }
     }
