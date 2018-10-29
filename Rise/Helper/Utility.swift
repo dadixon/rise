@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import SVProgressHUD
+import ChameleonFramework
 
 class Utility {
     static func textFormat(from date:Date) -> String {
@@ -28,15 +29,7 @@ class Utility {
         return rv
     }
     
-    static func sortNotesByDate(notes: [Note]) -> [Note] {
-//        var convertedArray: [Date] = []
-//
-//        for dat in notes {
-//            convertedArray.append(dat.created!)
-//        }
-        
-//        let ready = convertedArray.sorted(by: { $0.compare($1) == .orderedDescending })
-        
+    static func sortNotesByDate(notes: [Note]) -> [Note] {        
         return notes.sorted(by: { $0.created!.compare($1.created!) == .orderedDescending })
     }
     
@@ -46,12 +39,12 @@ class Utility {
             return UIColor.white
         }
         
-        if diffInDays >= 0 && diffInDays < 9 {
-            return UIColor.lightGray
-        } else if diffInDays >= 9 && diffInDays < 10 {
-            return UIColor.green
-        } else if diffInDays >= 10 {
-            return UIColor.red
+        if diffInDays >= 0 && diffInDays < UserDefaults.reminderStartDays - 2 {
+            return HexColor("99FBDA")!
+        } else if diffInDays >= UserDefaults.reminderStartDays - 2 && diffInDays < UserDefaults.reminderStartDays {
+            return HexColor("99F5FB")!
+        } else if diffInDays >= UserDefaults.reminderStartDays {
+            return HexColor("85C2F8")!
         }
         
         return UIColor.white
