@@ -11,6 +11,15 @@ import UIKit
 import SVProgressHUD
 import ChameleonFramework
 
+enum ErrorsToThrow: Error {
+    case firstNameNotFound
+    case lastNameNotFound
+    case noteTextNotFound
+    case noteCreatedDateNotFound
+    case canNotSave
+    case fullNameNotFound
+}
+
 class Utility {
     static func textFormat(from date:Date) -> String {
         let diffInDays = Calendar.current.dateComponents([.day], from: date, to: Date()).day

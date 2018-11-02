@@ -32,7 +32,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let userDefaults = UserDefaults.standard
         
         if userDefaults.string(forKey: Defaults.SortOrder) == nil {
-            UserDefaults.set(sortOrder: "Ascending")
+            UserDefaults.set(sortOrder: false)
+        }
+        
+        if userDefaults.string(forKey: Defaults.MainTitle) == nil {
+            UserDefaults.set(mainTitle: "Employees")
         }
         
         if userDefaults.integer(forKey: Defaults.StoreDays) == 0 {

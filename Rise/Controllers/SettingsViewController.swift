@@ -9,6 +9,7 @@
 import UIKit
 import Eureka
 import UserNotifications
+import MessageUI
 
 class SettingsViewController: FormViewController {
 
@@ -46,6 +47,16 @@ class SettingsViewController: FormViewController {
         }
         
         form
+            +++ Section("Header")
+            <<< TextRow() {
+                $0.title = "Header"
+                $0.value = UserDefaults.mainTitle
+                $0.onChange { row in
+                    if let newTitle = row.value {
+                        UserDefaults.set(mainTitle: newTitle)
+                    }
+                }
+            }
             +++ Section(header: "Reminders", footer: "These settings change when the reminders will display.")
             <<< SwitchRow("timeManagedReminders"){
                 $0.title = "Time Managed"
@@ -130,17 +141,22 @@ class SettingsViewController: FormViewController {
                         row.cell.valueLabel!.text = "\(Int(row.value!))"
                     }
                 })
-            <<< SegmentedRow<String>(){
-                $0.title = "Sort order"
+            <<< SwitchRow(){
+                $0.title = "Order in ascending order"
                 $0.value = UserDefaults.sortOrder
-                $0.options = FormItems.sortOptions
                 $0.onChange { row in
-                    UserDefaults.set(sortOrder: row.value!)
+                    if let newValue = row.value {
+                        UserDefaults.set(sortOrder: newValue)
+                    }
                 }
-                }
-                .cellSetup({ (cell, row) in
-                    self.userDefault.set(row.value, forKey: Defaults.SortOrder)
+            }
+            <<< LabelRow(){ row in
+                row.title = "Send us a message"
+                }.onCellSelection({ (cell, row) in
+                    print("Change email")
+                    self.sendEmail()
                 })
+            
             +++ Section("Account")
             <<< LabelRow(){ row in
                 row.title = "Change Email Account"
@@ -234,4 +250,33 @@ class SettingsViewController: FormViewController {
     @IBAction func dismissPressed(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
+    
+    func sendEmail() {
+        if MFMailComposeViewController.canSendMail() {
+            let body = """
+                <p>Name: {username}<br>
+                Company: {company name}<br>
+                Phone: {phone number}<br>
+                Email: {email}</p>
+
+                <p>Message: </p>
+            """
+            let mail = MFMailComposeViewController()
+            mail.mailComposeDelegate = self
+            mail.setToRecipients(["you@yoursite.com"])
+            mail.setMessageBody(body, isHTML: true)
+            
+            present(mail, animated: true)
+        } else {
+            // show failure alert
+        }
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true)
+    }
+}
+
+extension SettingsViewController: MFMailComposeViewControllerDelegate {
+    
 }

@@ -30,20 +30,25 @@ class EmployeesTableViewController: UITableViewController {
         self.clearsSelectionOnViewWillAppear = true
         self.tableView.tableFooterView = UIView()
 
+        setup()
         setupNavigation()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        title = "Employees"
+        title = UserDefaults.mainTitle
         
         employees = getEmployees()
         self.tableView.reloadData()
     }
     
+    private func setup() {
+        SVProgressHUD.setDefaultStyle(.dark)
+        SVProgressHUD.setMinimumDismissTimeInterval(3.0)
+    }
+    
     private func setupNavigation() {
-        addEmployeeBtn.title = "+ Empl"
         settingsBtn.title = "Settings"
         
         searchController.searchResultsUpdater = self
@@ -55,16 +60,9 @@ class EmployeesTableViewController: UITableViewController {
     
     func getEmployees() -> [Employee] {
         var rv = [Employee]()
-        var sortOrder = false
-        
-        if let UDSortOrder = userDefaults.string(forKey: "sortOrder") {
-            if UDSortOrder == "ascending" {
-                sortOrder = true
-            }
-        }
         
         let request: NSFetchRequest<Employee> = Employee.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "latest", ascending: sortOrder)
+        let sortDescriptor = NSSortDescriptor(key: "latest", ascending: UserDefaults.sortOrder)
         request.sortDescriptors = [sortDescriptor]
         
         do {
@@ -245,6 +243,22 @@ class EmployeesTableViewController: UITableViewController {
         return 70.0
     }
 
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let cellContentView  = cell.contentView
+        let rotationAngleDegrees = -30
+        let rotationAngleRadians = Double(rotationAngleDegrees) * (Double.pi/180)
+        let offsetPositioning = CGPoint(x: 500, y: -20.0)
+        var transform = CATransform3DIdentity
+        transform = CATransform3DRotate(transform, CGFloat(rotationAngleRadians), -50.0, 0.0, 1.0)
+        transform = CATransform3DTranslate(transform, offsetPositioning.x, offsetPositioning.y, -50.0)
+        cellContentView.layer.transform = transform
+        cellContentView.layer.opacity = 0.8
+        
+        UIView.animate(withDuration: 0.65, delay: 0.0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0.8, options: [], animations: {
+            cellContentView.layer.transform = CATransform3DIdentity;
+            cellContentView.layer.opacity = 1;
+        }, completion: nil)
+    }
     
     // MARK: - Navigation
 

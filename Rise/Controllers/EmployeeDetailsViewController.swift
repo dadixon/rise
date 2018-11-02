@@ -27,7 +27,24 @@ class EmployeeDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setup()
         setupNavigation()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        notes = sortedNotes()
+        self.notesTable.reloadData()
+        
+        nameLabel.text = employee.firstName! + " " + employee.lastName!
+        employeeDetailsLabel.text = setNoteDetails(count: notes.count, days: userDefault.integer(forKey: "days"))
+        selectedNote = nil
+    }
+    
+    private func setup() {
+        SVProgressHUD.setDefaultStyle(.dark)
+        SVProgressHUD.setMinimumDismissTimeInterval(3.0)
         
         notesTable.delegate = self
         notesTable.dataSource = self
@@ -42,17 +59,10 @@ class EmployeeDetailsViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: aSelector)
         tapGesture.numberOfTapsRequired = 1
         nameLabel.addGestureRecognizer(tapGesture)
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         
-        notes = sortedNotes()
-        self.notesTable.reloadData()
-        
-        nameLabel.text = employee.firstName! + " " + employee.lastName!
-        employeeDetailsLabel.text = setNoteDetails(count: notes.count, days: userDefault.integer(forKey: "days"))
-        selectedNote = nil
+        let tap = UITapGestureRecognizer(target: self, action: #selector(confirmUpdateEmployee))
+        tap.cancelsTouchesInView = false
+        self.view.addGestureRecognizer(tap)
     }
     
     func setupNavigation() {
@@ -111,10 +121,9 @@ class EmployeeDetailsViewController: UIViewController {
         }
     }
     
-    private func updateEmployee(employee: Employee) {
-        guard let fullName = nameTextField.text else {
-            SVProgressHUD.showError(withStatus: "Please leave a note")
-            return
+    private func updateEmployee(employee: Employee) throws {
+        guard let fullName = nameTextField.text, !fullName.isEmpty else {
+            throw ErrorsToThrow.fullNameNotFound
         }
         
         let nameArray = fullName.components(separatedBy: " ")
@@ -126,8 +135,24 @@ class EmployeeDetailsViewController: UIViewController {
             try context.save()
             SVProgressHUD.showSuccess(withStatus: "Employee Updated")
         } catch {
-            SVProgressHUD.showError(withStatus: "Error saving item")
             print("Error saving context \(error)")
+            throw ErrorsToThrow.canNotSave
+        }
+    }
+    
+    @objc func confirmUpdateEmployee() {
+        nameTextField.isHidden = true
+        nameLabel.isHidden = false
+        nameLabel.text = nameTextField.text
+        
+        do {
+            try updateEmployee(employee: employee)
+        } catch ErrorsToThrow.fullNameNotFound {
+            SVProgressHUD.showError(withStatus: "Please input a name")
+        } catch ErrorsToThrow.canNotSave {
+            SVProgressHUD.showError(withStatus: "Could not save")
+        } catch {
+            
         }
     }
     
@@ -222,10 +247,11 @@ extension EmployeeDetailsViewController: UITableViewDataSource {
 extension EmployeeDetailsViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        nameTextField.isHidden = true
-        nameLabel.isHidden = false
-        nameLabel.text = nameTextField.text
-        updateEmployee(employee: employee)
+//        nameTextField.isHidden = true
+//        nameLabel.isHidden = false
+//        nameLabel.text = nameTextField.text
+//        updateEmployee(employee: employee)
+        confirmUpdateEmployee()
         return true
     }
 }

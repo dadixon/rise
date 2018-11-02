@@ -17,6 +17,7 @@ struct Defaults {
     static let ReminderStartDays = "reminderStartDays"
     static let StoreDays = "storeDays"
     static let SortOrder = "sortOrder"
+    static let MainTitle = "mainTitle"
     
 }
 
@@ -43,11 +44,11 @@ extension UserDefaults {
         userDefaults.set(timeManagedReminder, forKey: Defaults.TimeManagedReminder)
     }
     
-    class var sortOrder: String {
+    class var sortOrder: Bool {
         let userDefaults = UserDefaults.standard
-        return userDefaults.string(forKey: Defaults.SortOrder)!
+        return userDefaults.bool(forKey: Defaults.SortOrder)
     }
-    class func set(sortOrder: String) {
+    class func set(sortOrder: Bool) {
         let userDefaults = UserDefaults.standard
         userDefaults.set(sortOrder, forKey: Defaults.SortOrder)
     }
@@ -68,5 +69,14 @@ extension UserDefaults {
     class func set(reminderStartDays: Int) {
         let userDefaults = UserDefaults.standard
         userDefaults.set(reminderStartDays, forKey: Defaults.ReminderStartDays)
+    }
+    
+    class var mainTitle: String {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.string(forKey: Defaults.MainTitle)!
+    }
+    class func set(mainTitle: String) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(mainTitle, forKey: Defaults.MainTitle)
     }
 }

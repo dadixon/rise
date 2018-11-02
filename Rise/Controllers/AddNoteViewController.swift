@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import SVProgressHUD
+import ChameleonFramework
 
 class AddNoteViewController: UIViewController {
 
@@ -27,33 +28,41 @@ class AddNoteViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setup()
+    }
+    
+    private func setup() {
+        SVProgressHUD.setDefaultStyle(.dark)
+        SVProgressHUD.setMinimumDismissTimeInterval(3.0)
+        
         title = "Recognition Note"
         saveBtn.setTitle("Save Note", for: .normal)
         dateFormatter.dateFormat = "MM-dd-yyyy"
         createdDate.text = dateFormatter.string(from: Date())
         editNote = false
         
-        noteTextArea.layer.borderColor = UIColor.black.cgColor
-        noteTextArea.layer.borderWidth = 1.0
+        noteTextArea.becomeFirstResponder()
         
         if note != nil {
             editNote = true
             noteTextArea.text = note.text
             createdDate.text = dateFormatter.string(from: note.created!)
         }
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(AddEmployeeViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        self.view.addGestureRecognizer(tap)
     }
     
-    private func saveNote() {
+    private func saveNote() throws {
         let note = Note(context: context)
         
-        guard let text = noteTextArea.text else {
-            SVProgressHUD.showError(withStatus: "Please leave a note")
-            return
+        guard let text = noteTextArea.text, !text.isEmpty else {
+            throw ErrorsToThrow.noteTextNotFound
         }
         
-        guard let created = createdDate.text else {
-            SVProgressHUD.showError(withStatus: "Please select a date")
-            return
+        guard let created = createdDate.text, !created.isEmpty else {
+            throw ErrorsToThrow.noteCreatedDateNotFound
         }
         
         note.text = text
@@ -67,23 +76,20 @@ class AddNoteViewController: UIViewController {
         
         do {
             try context.save()
-            print("saved")
             SVProgressHUD.showSuccess(withStatus: "Note Saved")
         } catch {
-            SVProgressHUD.showError(withStatus: "Error saving item")
             print("Error saving context \(error)")
+            throw ErrorsToThrow.canNotSave
         }
     }
     
-    private func updateNote(note: Note) {
-        guard let text = noteTextArea.text else {
-            SVProgressHUD.showError(withStatus: "Please leave a note")
-            return
+    private func updateNote(note: Note) throws {
+        guard let text = noteTextArea.text, !text.isEmpty else {
+            throw ErrorsToThrow.noteTextNotFound
         }
         
-        guard let created = createdDate.text else {
-            SVProgressHUD.showError(withStatus: "Please select a date")
-            return
+        guard let created = createdDate.text, !created.isEmpty else {
+            throw ErrorsToThrow.noteCreatedDateNotFound
         }
         
         note.setValue(text, forKey: "text")
@@ -97,16 +103,36 @@ class AddNoteViewController: UIViewController {
             try context.save()
             SVProgressHUD.showSuccess(withStatus: "Note Updated")
         } catch {
-            SVProgressHUD.showError(withStatus: "Error saving item")
             print("Error saving context \(error)")
+            throw ErrorsToThrow.canNotSave
         }
     }
     
     @IBAction func saveNoteClicked(_ sender: Any) {
         if editNote {
-            updateNote(note: self.note)
+            do {
+                try updateNote(note: self.note)
+            } catch ErrorsToThrow.noteTextNotFound {
+                SVProgressHUD.showError(withStatus: "Please leave a note")
+            } catch ErrorsToThrow.noteCreatedDateNotFound {
+                SVProgressHUD.showError(withStatus: "Please leave a note")
+            } catch ErrorsToThrow.canNotSave {
+                SVProgressHUD.showError(withStatus: "Error saving item")
+            } catch {
+                
+            }
         } else {
-            saveNote()
+            do {
+                try saveNote()
+            } catch ErrorsToThrow.noteTextNotFound {
+                SVProgressHUD.showError(withStatus: "Please leave a note")
+            } catch ErrorsToThrow.noteCreatedDateNotFound {
+                SVProgressHUD.showError(withStatus: "Please leave a note")
+            } catch ErrorsToThrow.canNotSave {
+                SVProgressHUD.showError(withStatus: "Error saving item")
+            } catch {
+                
+            }
         }
         
         if backTo == "Dashboard" {
@@ -125,5 +151,9 @@ class AddNoteViewController: UIViewController {
     
     @objc func datePickerFromValueChanged(sender:UIDatePicker) {
         createdDate.text = dateFormatter.string(from: sender.date)
+    }
+    
+    @objc func dismissKeyboard() {
+        self.view.endEditing(true)
     }
 }
