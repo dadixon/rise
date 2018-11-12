@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ryp-Zd-iz0">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Add Employee View Controller-->
+        <scene sceneID="KR2-6B-WFR">
+            <objects>
+                <viewController storyboardIdentifier="addEmployee" useStoryboardIdentifierAsRestorationIdentifier="YES" id="ryp-Zd-iz0" customClass="AddEmployeeViewController" customModule="Rise" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8CC-5U-Inq">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="First Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="EIv-xa-aCL" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
+                                <rect key="frame" x="139" y="64" width="97" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Last Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="JJy-ie-opN" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
+                                <rect key="frame" x="139" y="109" width="97" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vmn-Ip-TSw">
+                                <rect key="frame" x="164" y="229" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="addEmployeeClicked:" destination="ryp-Zd-iz0" eventType="touchUpInside" id="zQ9-lB-5MV"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EAq-hv-qZ4">
+                                <rect key="frame" x="164" y="260" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="addMoreEmployeeClicked:" destination="ryp-Zd-iz0" eventType="touchUpInside" id="O1Z-C8-XsN"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="qW7-PC-B6q"/>
+                    </view>
+                    <connections>
+                        <outlet property="addEmployeeBtn" destination="vmn-Ip-TSw" id="pri-JN-r2k"/>
+                        <outlet property="addMoreBtn" destination="EAq-hv-qZ4" id="Gvb-2h-ZvS"/>
+                        <outlet property="firstNameTextField" destination="EIv-xa-aCL" id="Hwc-d0-jwe"/>
+                        <outlet property="lastNameTextField" destination="JJy-ie-opN" id="1Ms-tg-Xsq"/>
+                        <segue destination="gUb-LK-Q4x" kind="unwind" unwindAction="unwindToEmployeesDashboardWithSegue:" id="pHs-iF-r79"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qBu-w6-0U1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="gUb-LK-Q4x" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="217" y="-151"/>
+        </scene>
+    </scenes>
+</document>

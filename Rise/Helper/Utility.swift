@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SVProgressHUD
 import ChameleonFramework
+import CoreData
 
 enum ErrorsToThrow: Error {
     case firstNameNotFound
@@ -18,6 +19,7 @@ enum ErrorsToThrow: Error {
     case noteCreatedDateNotFound
     case canNotSave
     case fullNameNotFound
+    case tooFarBehind
 }
 
 class Utility {
@@ -57,5 +59,56 @@ class Utility {
         }
         
         return UIColor.white
+    }
+    
+    static func removeOldNotes() {
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        var rv = [Note]()
+        var employees = [Employee]()
+        var calendar = Calendar.current
+        
+        calendar.timeZone = NSTimeZone.local
+        
+        let dateFrom = calendar.startOfDay(for: Date())
+        let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
+        let storeDaysPredicate = NSPredicate(format: "created < %@", dateTo! as NSDate)
+        let request: NSFetchRequest<Note> = Note.fetchRequest()
+        
+        request.predicate = storeDaysPredicate
+        
+        do {
+            rv = try context.fetch(request)
+            
+            for note in rv {
+                context.delete(note)
+            }
+            
+            let employeesRequest: NSFetchRequest<Employee> = Employee.fetchRequest()
+            
+            do {
+                employees = try context.fetch(employeesRequest)
+                
+                for employee in employees {
+                    let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
+                    
+                    if notes.count > 0 {
+                        employee.latest = notes[0].created
+                    } else {
+                        employee.latest = nil
+                    }
+                }
+                
+            } catch {
+                
+            }
+            
+            do {
+                try context.save()
+            } catch {
+                
+            }
+        } catch {
+            print("Error fetching data from context \(error)")
+        }
     }
 }

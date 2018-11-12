@@ -27,11 +27,12 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GhV-xR-nQW">
-                                <rect key="frame" x="16" y="362" width="343" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GhV-xR-nQW" customClass="RisePrimaryUIButton" customModule="Rise" customModuleProvider="target">
+                                <rect key="frame" x="16" y="362" width="343" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="hCq-mE-JsO"/>
+                                    <constraint firstAttribute="height" constant="50" id="hCq-mE-JsO"/>
                                 </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="saveNoteClicked:" destination="IZE-qZ-814" eventType="touchUpInside" id="PaE-9t-uth"/>

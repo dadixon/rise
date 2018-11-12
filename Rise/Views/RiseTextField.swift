@@ -24,6 +24,7 @@ class RiseTextField: UITextField {
         
         self.layer.borderColor = blurColor.cgColor
         self.layer.borderWidth = 1.5
+        self.layer.cornerRadius = 2
         self.layer.masksToBounds = true
     }
     

@@ -60,9 +60,19 @@ class EmployeesTableViewController: UITableViewController {
     
     func getEmployees() -> [Employee] {
         var rv = [Employee]()
+        var calendar = Calendar.current
         
-        let request: NSFetchRequest<Employee> = Employee.fetchRequest()
+        calendar.timeZone = NSTimeZone.local
+        
+        let dateFrom = calendar.startOfDay(for: Date())
+        let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
+        let noNotePredicate = NSPredicate(format: "latest == nil")
+        let storeDaysPredicate = NSPredicate(format: "latest > %@", dateTo! as NSDate)
+        let datePredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
         let sortDescriptor = NSSortDescriptor(key: "latest", ascending: UserDefaults.sortOrder)
+        let request: NSFetchRequest<Employee> = Employee.fetchRequest()
+        
+        request.predicate = datePredicate
         request.sortDescriptors = [sortDescriptor]
         
         do {

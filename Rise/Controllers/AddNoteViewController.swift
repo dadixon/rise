@@ -55,8 +55,6 @@ class AddNoteViewController: UIViewController {
     }
     
     private func saveNote() throws {
-        let note = Note(context: context)
-        
         guard let text = noteTextArea.text, !text.isEmpty else {
             throw ErrorsToThrow.noteTextNotFound
         }
@@ -65,21 +63,37 @@ class AddNoteViewController: UIViewController {
             throw ErrorsToThrow.noteCreatedDateNotFound
         }
         
-        note.text = text
-        note.created = dateFormatter.date(from: created)
+        guard let diffInDays = Calendar.current.dateComponents([.day], from: dateFormatter.date(from: created)!, to: Date()).day else {
+            SVProgressHUD.showError(withStatus: "Unable to process")
+            return
+        }
         
-        employee.addToNotes(note)
-        
-        let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
-        
-        employee.latest = notes[0].created
-        
-        do {
-            try context.save()
-            SVProgressHUD.showSuccess(withStatus: "Note Saved")
-        } catch {
-            print("Error saving context \(error)")
-            throw ErrorsToThrow.canNotSave
+        if diffInDays > UserDefaults.storeDays {
+           throw ErrorsToThrow.tooFarBehind
+        } else {
+            let note = Note(context: context)
+            note.text = text
+            note.created = dateFormatter.date(from: created)
+            
+            employee.addToNotes(note)
+            
+            let notes = employee.notes?.sorted(by: { (a, b) -> Bool in
+                if (a as! Note) != nil, (b as! Note) != nil {
+                    return (a as! Note).created?.compare((b as! Note).created!) == .orderedDescending
+                } else {
+                    return false
+                }
+            }) as! [Note]
+
+            employee.latest = notes[0].created
+            
+            do {
+                try context.save()
+                SVProgressHUD.showSuccess(withStatus: "Note Saved")
+            } catch {
+                print("Error saving context \(error)")
+                throw ErrorsToThrow.canNotSave
+            }
         }
     }
     
@@ -92,19 +106,28 @@ class AddNoteViewController: UIViewController {
             throw ErrorsToThrow.noteCreatedDateNotFound
         }
         
-        note.setValue(text, forKey: "text")
-        note.setValue(dateFormatter.date(from: created), forKey: "created")
+        guard let diffInDays = Calendar.current.dateComponents([.day], from: dateFormatter.date(from: created)!, to: Date()).day else {
+            SVProgressHUD.showError(withStatus: "Unable to process")
+            return
+        }
         
-        let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
-        
-        employee.latest = notes[0].created
-        
-        do {
-            try context.save()
-            SVProgressHUD.showSuccess(withStatus: "Note Updated")
-        } catch {
-            print("Error saving context \(error)")
-            throw ErrorsToThrow.canNotSave
+        if diffInDays > UserDefaults.storeDays {
+            throw ErrorsToThrow.tooFarBehind
+        } else {
+            note.setValue(text, forKey: "text")
+            note.setValue(dateFormatter.date(from: created), forKey: "created")
+            
+            let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
+            
+            employee.latest = notes[0].created
+            
+            do {
+                try context.save()
+                SVProgressHUD.showSuccess(withStatus: "Note Updated")
+            } catch {
+                print("Error saving context \(error)")
+                throw ErrorsToThrow.canNotSave
+            }
         }
     }
     
@@ -112,33 +135,43 @@ class AddNoteViewController: UIViewController {
         if editNote {
             do {
                 try updateNote(note: self.note)
+                
+                if backTo == "Dashboard" {
+                    performSegue(withIdentifier: "unwindToEmployeeDashboard", sender: self)
+                } else if backTo == "Details" {
+                    performSegue(withIdentifier: "unwindToEmployeeDetails", sender: self)
+                }
             } catch ErrorsToThrow.noteTextNotFound {
                 SVProgressHUD.showError(withStatus: "Please leave a note")
             } catch ErrorsToThrow.noteCreatedDateNotFound {
                 SVProgressHUD.showError(withStatus: "Please leave a note")
             } catch ErrorsToThrow.canNotSave {
                 SVProgressHUD.showError(withStatus: "Error saving item")
+            } catch ErrorsToThrow.tooFarBehind {
+                SVProgressHUD.showError(withStatus: "Date is too far behind")
             } catch {
                 
             }
         } else {
             do {
                 try saveNote()
+                
+                if backTo == "Dashboard" {
+                    performSegue(withIdentifier: "unwindToEmployeeDashboard", sender: self)
+                } else if backTo == "Details" {
+                    performSegue(withIdentifier: "unwindToEmployeeDetails", sender: self)
+                }
             } catch ErrorsToThrow.noteTextNotFound {
                 SVProgressHUD.showError(withStatus: "Please leave a note")
             } catch ErrorsToThrow.noteCreatedDateNotFound {
                 SVProgressHUD.showError(withStatus: "Please leave a note")
             } catch ErrorsToThrow.canNotSave {
                 SVProgressHUD.showError(withStatus: "Error saving item")
+            } catch ErrorsToThrow.tooFarBehind {
+                 SVProgressHUD.showError(withStatus: "Date is too far behind")
             } catch {
                 
             }
-        }
-        
-        if backTo == "Dashboard" {
-            performSegue(withIdentifier: "unwindToEmployeeDashboard", sender: self)
-        } else if backTo == "Details" {
-            performSegue(withIdentifier: "unwindToEmployeeDetails", sender: self)
         }
     }
     

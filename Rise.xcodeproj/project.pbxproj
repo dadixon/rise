@@ -11,6 +11,9 @@
 		A40F3434214B856600FA0FAA /* EmployeeDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40F3433214B856600FA0FAA /* EmployeeDetailsViewController.swift */; };
 		A40F3436214B94E300FA0FAA /* AddNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40F3435214B94E300FA0FAA /* AddNoteViewController.swift */; };
 		A40F3438214B9CA100FA0FAA /* NoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40F3437214B9CA100FA0FAA /* NoteTableViewCell.swift */; };
+		A450B1A8219050C200DEA005 /* RisePrimaryUIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A450B1A7219050C200DEA005 /* RisePrimaryUIButton.swift */; };
+		A450B1AA2190573500DEA005 /* RiseSecondaryUIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A450B1A92190573500DEA005 /* RiseSecondaryUIButton.swift */; };
+		A450B1AC21905B8100DEA005 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A450B1AB21905B8100DEA005 /* LoginViewController.swift */; };
 		A46EDF51218343D700C37CD6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46EDF50218343D700C37CD6 /* SettingsViewController.swift */; };
 		A46EDF53218343F100C37CD6 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A46EDF52218343F100C37CD6 /* Settings.storyboard */; };
 		A46EDF5521834BE900C37CD6 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46EDF5421834BE900C37CD6 /* Defaults.swift */; };
@@ -24,7 +27,7 @@
 		A4B5D5562146F29D00A46D00 /* RiseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B5D5552146F29D00A46D00 /* RiseUITests.swift */; };
 		A4B5D5672146F5D100A46D00 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A4B5D5662146F5D100A46D00 /* GoogleService-Info.plist */; };
 		A4B988D4218092AF004146E9 /* AddNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4B988D3218092AF004146E9 /* AddNote.storyboard */; };
-		A4B988D921809337004146E9 /* AddEmployee.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4B988D821809337004146E9 /* AddEmployee.storyboard */; };
+		A4BED5AE2195F3DC00689B60 /* AddEmployee.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4BED5AD2195F3DC00689B60 /* AddEmployee.storyboard */; };
 		A4C5FFA62187273300AB0058 /* RiseTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C5FFA52187273300AB0058 /* RiseTextField.swift */; };
 		A4EF60BB214A2B9E00F1E673 /* EmployeesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EF60BA214A2B9E00F1E673 /* EmployeesTableViewController.swift */; };
 		A4EF60BD214A351D00F1E673 /* AddEmployeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EF60BC214A351D00F1E673 /* AddEmployeeViewController.swift */; };
@@ -61,6 +64,9 @@
 		A40F3433214B856600FA0FAA /* EmployeeDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeDetailsViewController.swift; sourceTree = "<group>"; };
 		A40F3435214B94E300FA0FAA /* AddNoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNoteViewController.swift; sourceTree = "<group>"; };
 		A40F3437214B9CA100FA0FAA /* NoteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewCell.swift; sourceTree = "<group>"; };
+		A450B1A7219050C200DEA005 /* RisePrimaryUIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RisePrimaryUIButton.swift; sourceTree = "<group>"; };
+		A450B1A92190573500DEA005 /* RiseSecondaryUIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiseSecondaryUIButton.swift; sourceTree = "<group>"; };
+		A450B1AB21905B8100DEA005 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		A46EDF50218343D700C37CD6 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		A46EDF52218343F100C37CD6 /* Settings.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
 		A46EDF5421834BE900C37CD6 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
@@ -80,7 +86,7 @@
 		A4B5D5572146F29D00A46D00 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A4B5D5662146F5D100A46D00 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A4B988D3218092AF004146E9 /* AddNote.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = AddNote.storyboard; sourceTree = "<group>"; };
-		A4B988D821809337004146E9 /* AddEmployee.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = AddEmployee.storyboard; path = ../../../../../.Trash/AddEmployee.storyboard; sourceTree = "<group>"; };
+		A4BED5AD2195F3DC00689B60 /* AddEmployee.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddEmployee.storyboard; sourceTree = "<group>"; };
 		A4C5FFA52187273300AB0058 /* RiseTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiseTextField.swift; sourceTree = "<group>"; };
 		A4EF60BA214A2B9E00F1E673 /* EmployeesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeesTableViewController.swift; sourceTree = "<group>"; };
 		A4EF60BC214A351D00F1E673 /* AddEmployeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEmployeeViewController.swift; sourceTree = "<group>"; };
@@ -122,6 +128,7 @@
 		A41916242146FA29002D6CCC /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				A450B1AB21905B8100DEA005 /* LoginViewController.swift */,
 				A4EF60BA214A2B9E00F1E673 /* EmployeesTableViewController.swift */,
 				A4EF60BC214A351D00F1E673 /* AddEmployeeViewController.swift */,
 				A40F3433214B856600FA0FAA /* EmployeeDetailsViewController.swift */,
@@ -138,6 +145,8 @@
 				A40F3437214B9CA100FA0FAA /* NoteTableViewCell.swift */,
 				A4C5FFA52187273300AB0058 /* RiseTextField.swift */,
 				A4001F1B218C56AB007EBC6E /* RiseTextView.swift */,
+				A450B1A7219050C200DEA005 /* RisePrimaryUIButton.swift */,
+				A450B1A92190573500DEA005 /* RiseSecondaryUIButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -219,10 +228,10 @@
 			isa = PBXGroup;
 			children = (
 				A46EDF52218343F100C37CD6 /* Settings.storyboard */,
-				A4B988D821809337004146E9 /* AddEmployee.storyboard */,
 				A4B988D3218092AF004146E9 /* AddNote.storyboard */,
 				A4B5D53E2146F29D00A46D00 /* LaunchScreen.storyboard */,
 				A4B5D5362146F29C00A46D00 /* Main.storyboard */,
+				A4BED5AD2195F3DC00689B60 /* AddEmployee.storyboard */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -365,8 +374,8 @@
 				A4B5D5402146F29D00A46D00 /* LaunchScreen.storyboard in Resources */,
 				A46EDF53218343F100C37CD6 /* Settings.storyboard in Resources */,
 				A4B5D5672146F5D100A46D00 /* GoogleService-Info.plist in Resources */,
+				A4BED5AE2195F3DC00689B60 /* AddEmployee.storyboard in Resources */,
 				A4B5D53D2146F29D00A46D00 /* Assets.xcassets in Resources */,
-				A4B988D921809337004146E9 /* AddEmployee.storyboard in Resources */,
 				A4B5D5382146F29C00A46D00 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -478,15 +487,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				A40F3436214B94E300FA0FAA /* AddNoteViewController.swift in Sources */,
+				A450B1A8219050C200DEA005 /* RisePrimaryUIButton.swift in Sources */,
 				A4B5D53B2146F29C00A46D00 /* Rise.xcdatamodeld in Sources */,
 				A4B56EC8214DDC5400D74FE5 /* Utility.swift in Sources */,
 				A46EDF51218343D700C37CD6 /* SettingsViewController.swift in Sources */,
+				A450B1AA2190573500DEA005 /* RiseSecondaryUIButton.swift in Sources */,
 				A4B5D5332146F29C00A46D00 /* AppDelegate.swift in Sources */,
 				A40F3438214B9CA100FA0FAA /* NoteTableViewCell.swift in Sources */,
 				A4001F1C218C56AB007EBC6E /* RiseTextView.swift in Sources */,
 				A4C5FFA62187273300AB0058 /* RiseTextField.swift in Sources */,
 				A4EF60BD214A351D00F1E673 /* AddEmployeeViewController.swift in Sources */,
 				A40F3434214B856600FA0FAA /* EmployeeDetailsViewController.swift in Sources */,
+				A450B1AC21905B8100DEA005 /* LoginViewController.swift in Sources */,
 				A4EF60BF214A3EA000F1E673 /* EmployeeTableViewCell.swift in Sources */,
 				A4EF60BB214A2B9E00F1E673 /* EmployeesTableViewController.swift in Sources */,
 				A46EDF5521834BE900C37CD6 /* Defaults.swift in Sources */,

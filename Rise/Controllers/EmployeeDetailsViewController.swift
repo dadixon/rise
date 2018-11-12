@@ -8,6 +8,7 @@
 
 import UIKit
 import SVProgressHUD
+import CoreData
 
 class EmployeeDetailsViewController: UIViewController {
 
@@ -23,6 +24,7 @@ class EmployeeDetailsViewController: UIViewController {
     var selectedEmployeeIndexPath: IndexPath? = nil
     var selectedNote: Note? = nil
     let userDefault = UserDefaults.standard
+    var tap: UIGestureRecognizer? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,9 +62,8 @@ class EmployeeDetailsViewController: UIViewController {
         tapGesture.numberOfTapsRequired = 1
         nameLabel.addGestureRecognizer(tapGesture)
         
-        let tap = UITapGestureRecognizer(target: self, action: #selector(confirmUpdateEmployee))
-        tap.cancelsTouchesInView = false
-        self.view.addGestureRecognizer(tap)
+        tap = UITapGestureRecognizer(target: self, action: #selector(confirmUpdateEmployee))
+        tap!.cancelsTouchesInView = false
     }
     
     func setupNavigation() {
@@ -98,6 +99,7 @@ class EmployeeDetailsViewController: UIViewController {
     }
     
     func deleteNote(note: Note) {
+        employee.removeFromNotes(note)
         context.delete(note)
         
         do {
@@ -108,16 +110,34 @@ class EmployeeDetailsViewController: UIViewController {
     }
     
     func updateLatestNote() {
-        let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
-        
-        if notes.count > 0 {
-            employee.latest = notes[0].created
-            
-            do {
-                try context.save()
-            } catch {
-                SVProgressHUD.showSuccess(withStatus: "Note has been deleted")
+        if let notes = employee.notes {
+            if notes.count > 1 {
+                let notesArray = notes.array as! [Note]
+                let notesTemp = notesArray.sorted(by: {$0.created!.compare($1.created!) == .orderedDescending})
+                
+                if notes.count > 0 {
+                    guard let diffInDays = Calendar.current.dateComponents([.day], from: notesTemp[0].created!, to: Date()).day else {
+                        SVProgressHUD.showError(withStatus: "Unable to process")
+                        return
+                    }
+                    
+                    if diffInDays > UserDefaults.storeDays {
+                        employee.latest = nil
+                    } else {
+                        employee.latest = notesTemp[0].created
+                    }
+                }
+            } else {
+                employee.latest = nil
             }
+        } else {
+            employee.latest = nil
+        }
+        
+        do {
+            try context.save()
+        } catch {
+            SVProgressHUD.showSuccess(withStatus: "Note has been deleted")
         }
     }
     
@@ -147,6 +167,7 @@ class EmployeeDetailsViewController: UIViewController {
         
         do {
             try updateEmployee(employee: employee)
+            self.view.removeGestureRecognizer(tap!)
         } catch ErrorsToThrow.fullNameNotFound {
             SVProgressHUD.showError(withStatus: "Please input a name")
         } catch ErrorsToThrow.canNotSave {
@@ -165,6 +186,8 @@ class EmployeeDetailsViewController: UIViewController {
         nameTextField.isHidden = false
         nameTextField.text = nameLabel.text
         nameTextField.becomeFirstResponder()
+        
+        self.view.addGestureRecognizer(tap!)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -195,6 +218,7 @@ extension EmployeeDetailsViewController: UITableViewDelegate {
                     tableView.beginUpdates()
                     
                     self.deleteNote(note: self.notes[indexPath.row])
+                    self.updateLatestNote()
                     self.notes.remove(at: indexPath.row)
                     self.employeeDetailsLabel.text = self.setNoteDetails(count: self.notes.count, days: self.userDefault.integer(forKey: "days"))
                     self.updateLatestNote()

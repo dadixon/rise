@@ -96,6 +96,7 @@ class AddEmployeeViewController: UIViewController {
         let employee = Employee(context: context)
         employee.firstName = firstName
         employee.lastName = lastName
+        employee.latest = nil
         
         do {
             try context.save()

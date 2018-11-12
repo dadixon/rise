@@ -10,6 +10,7 @@ import UIKit
 import Eureka
 import UserNotifications
 import MessageUI
+import SVProgressHUD
 
 class SettingsViewController: FormViewController {
 
@@ -39,6 +40,8 @@ class SettingsViewController: FormViewController {
         super.viewDidLoad()
         
         title = "Settings"
+        
+        setup()
         
         var startDate: Date? = nil
         
@@ -135,6 +138,7 @@ class SettingsViewController: FormViewController {
                         cell.valueLabel!.text = "\(Int(row.value!))"
                     }
                 }).onChange({ (row) in
+                    UserDefaults.set(storeDays: Int(row.value!))
                     self.userDefault.set(Int(row.value!), forKey: Defaults.StoreDays)
                     if(row.value != nil)
                     {
@@ -192,6 +196,11 @@ class SettingsViewController: FormViewController {
 //                    print(UserDefaults.storeDays)
 //                    print(UserDefaults.sortOrder)
 //                })
+    }
+    
+    private func setup() {
+        SVProgressHUD.setDefaultStyle(.dark)
+        SVProgressHUD.setMinimumDismissTimeInterval(3.0)
     }
     
     private func registerNotification() {
@@ -263,12 +272,13 @@ class SettingsViewController: FormViewController {
             """
             let mail = MFMailComposeViewController()
             mail.mailComposeDelegate = self
-            mail.setToRecipients(["you@yoursite.com"])
+            mail.setToRecipients(["info@myemployees.com"])
             mail.setMessageBody(body, isHTML: true)
             
             present(mail, animated: true)
         } else {
             // show failure alert
+            SVProgressHUD.showError(withStatus: "Message could not be sent.")
         }
     }
     

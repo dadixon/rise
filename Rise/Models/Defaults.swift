@@ -60,6 +60,7 @@ extension UserDefaults {
     class func set(storeDays: Int) {
         let userDefaults = UserDefaults.standard
         userDefaults.set(storeDays, forKey: Defaults.StoreDays)
+        Utility.removeOldNotes()
     }
     
     class var reminderStartDays: Int {

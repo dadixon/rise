@@ -80,7 +80,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="hcI-OC-SdQ">
                             <connections>
-                                <segue destination="vHH-6c-KsU" kind="show" identifier="showAddEmployee" id="p4h-Bh-rzL"/>
+                                <segue destination="gMP-rv-0Yh" kind="presentation" id="BEg-KP-LIY"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -212,6 +212,57 @@
             </objects>
             <point key="canvasLocation" x="1085.5999999999999" y="141.67916041979012"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="Msz-5c-r7N">
+            <objects>
+                <viewController id="uGj-oC-1S3" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="G6C-CK-Lb7">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YbZ-BF-ytq">
+                                <rect key="frame" x="166" y="135" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZMh-r9-TKi">
+                                <rect key="frame" x="139" y="206" width="97" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xwP-rk-A7c">
+                                <rect key="frame" x="139" y="250" width="97" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hHZ-Gr-tuH">
+                                <rect key="frame" x="164" y="318" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j41-ae-A5D">
+                                <rect key="frame" x="164" y="356" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="uaM-WH-gLX"/>
+                    </view>
+                    <connections>
+                        <segue destination="3V5-ti-uHQ" kind="show" id="nEW-Bk-Ghs"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FSe-T3-TRP" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1546" y="144"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="fDS-bo-h9S">
             <objects>
@@ -236,14 +287,6 @@
             </objects>
             <point key="canvasLocation" x="1642" y="-444"/>
         </scene>
-        <!--AddEmployee-->
-        <scene sceneID="T5e-Ah-zFu">
-            <objects>
-                <viewControllerPlaceholder storyboardName="AddEmployee" id="vHH-6c-KsU" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="fJG-qb-k0t" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="844" y="-444"/>
-        </scene>
         <!--Settings-->
         <scene sceneID="Zah-dW-RiE">
             <objects>
@@ -251,6 +294,14 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Njr-7j-4jU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="286" y="-636"/>
+        </scene>
+        <!--AddEmployee-->
+        <scene sceneID="PH8-ae-8CG">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="addEmployee" storyboardName="AddEmployee" id="gMP-rv-0Yh" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="URE-sO-c4C" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="798" y="-407"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
