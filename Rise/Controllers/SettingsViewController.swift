@@ -11,6 +11,7 @@ import Eureka
 import UserNotifications
 import MessageUI
 import SVProgressHUD
+import CoreData
 
 class SettingsViewController: FormViewController {
 
@@ -219,9 +220,7 @@ class SettingsViewController: FormViewController {
         let content = UNMutableNotificationContent()
         
         //adding title, subtitle, body and badge
-        content.title = "Hey this is Simplified iOS"
-        content.subtitle = "iOS Development is fun"
-        content.body = "We are learning about iOS Local Notification"
+        content.title = "You have \(getNotificationTextCount()) employees you have not recognized in more than \(UserDefaults.storeDays) days."
         content.badge = 1
         content.categoryIdentifier = "customIdentifier"
         content.userInfo = ["customData": "fizzbuzz"]
@@ -254,6 +253,32 @@ class SettingsViewController: FormViewController {
     
     private func cancelNotification() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+    
+    private func getNotificationTextCount() -> Int {
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        var rv = [Employee]()
+        var calendar = Calendar.current
+        
+        calendar.timeZone = NSTimeZone.local
+        
+        let dateFrom = calendar.startOfDay(for: Date())
+        let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
+        let noNotePredicate = NSPredicate(format: "latest == nil")
+        let storeDaysPredicate = NSPredicate(format: "latest < %@", dateTo! as NSDate)
+        let datePredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
+        let request: NSFetchRequest<Employee> = Employee.fetchRequest()
+        
+        request.predicate = datePredicate
+        
+        do {
+            rv = try context.fetch(request)
+            return rv.count
+        } catch {
+            print("Error fetching data from context \(error)")
+        }
+        
+        return 0
     }
     
     @IBAction func dismissPressed(_ sender: Any) {

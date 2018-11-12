@@ -67,7 +67,7 @@ class EmployeesTableViewController: UITableViewController {
         let dateFrom = calendar.startOfDay(for: Date())
         let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
         let noNotePredicate = NSPredicate(format: "latest == nil")
-        let storeDaysPredicate = NSPredicate(format: "latest > %@", dateTo! as NSDate)
+        let storeDaysPredicate = NSPredicate(format: "latest >= %@", dateTo! as NSDate)
         let datePredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
         let sortDescriptor = NSSortDescriptor(key: "latest", ascending: UserDefaults.sortOrder)
         let request: NSFetchRequest<Employee> = Employee.fetchRequest()
