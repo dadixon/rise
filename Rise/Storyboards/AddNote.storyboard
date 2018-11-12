@@ -18,6 +18,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IsR-BB-w6o">
+                                <rect key="frame" x="16" y="28" width="343" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="cuI-Yc-Y2y" customClass="RiseTextView" customModule="Rise" customModuleProvider="target">
                                 <rect key="frame" x="16" y="57" width="343" height="226"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -38,7 +44,7 @@
                                     <action selector="saveNoteClicked:" destination="IZE-qZ-814" eventType="touchUpInside" id="PaE-9t-uth"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fy7-KS-PQB" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
+                            <textField hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fy7-KS-PQB" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
                                 <rect key="frame" x="77" y="311" width="221" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -51,12 +57,16 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="GhV-xR-nQW" firstAttribute="centerX" secondItem="azL-KN-RcK" secondAttribute="centerX" id="1ts-jh-ONM"/>
+                            <constraint firstItem="IsR-BB-w6o" firstAttribute="top" secondItem="cuD-82-mhf" secondAttribute="top" constant="8" id="3O8-a4-UXN"/>
+                            <constraint firstItem="cuD-82-mhf" firstAttribute="trailing" secondItem="IsR-BB-w6o" secondAttribute="trailing" constant="16" id="BXh-sz-A0u"/>
                             <constraint firstItem="cuI-Yc-Y2y" firstAttribute="top" secondItem="cuD-82-mhf" secondAttribute="top" constant="37" id="PkP-Cm-fjo"/>
+                            <constraint firstItem="cuI-Yc-Y2y" firstAttribute="top" secondItem="IsR-BB-w6o" secondAttribute="bottom" constant="8" id="VPa-sf-mJv"/>
                             <constraint firstItem="Fy7-KS-PQB" firstAttribute="centerX" secondItem="azL-KN-RcK" secondAttribute="centerX" id="X7w-DZ-jfR"/>
                             <constraint firstItem="Fy7-KS-PQB" firstAttribute="top" secondItem="cuI-Yc-Y2y" secondAttribute="bottom" constant="28" id="YTC-NI-QpQ"/>
                             <constraint firstItem="cuI-Yc-Y2y" firstAttribute="centerX" secondItem="azL-KN-RcK" secondAttribute="centerX" id="h21-on-EqF"/>
                             <constraint firstItem="GhV-xR-nQW" firstAttribute="top" secondItem="Fy7-KS-PQB" secondAttribute="bottom" constant="21" id="lSS-XB-rSd"/>
                             <constraint firstItem="cuD-82-mhf" firstAttribute="trailing" secondItem="Fy7-KS-PQB" secondAttribute="trailing" constant="77" id="mpb-sy-qdU"/>
+                            <constraint firstItem="IsR-BB-w6o" firstAttribute="leading" secondItem="cuD-82-mhf" secondAttribute="leading" constant="16" id="o6R-Ba-c9M"/>
                             <constraint firstItem="GhV-xR-nQW" firstAttribute="leading" secondItem="cuD-82-mhf" secondAttribute="leading" constant="16" id="rkk-qe-3BT"/>
                             <constraint firstItem="cuD-82-mhf" firstAttribute="trailing" secondItem="cuI-Yc-Y2y" secondAttribute="trailing" constant="16" id="rvQ-i5-pNv"/>
                             <constraint firstItem="Fy7-KS-PQB" firstAttribute="leading" secondItem="cuD-82-mhf" secondAttribute="leading" constant="77" id="s2Y-gj-bKo"/>
@@ -69,6 +79,7 @@
                         <outlet property="createdDate" destination="Fy7-KS-PQB" id="5fM-SE-bkS"/>
                         <outlet property="noteTextArea" destination="cuI-Yc-Y2y" id="3zf-9u-GJ1"/>
                         <outlet property="saveBtn" destination="GhV-xR-nQW" id="UpB-Up-X3f"/>
+                        <outlet property="titleLabel" destination="IsR-BB-w6o" id="gch-ki-5Fx"/>
                         <segue destination="aMQ-pD-Gcc" kind="unwind" identifier="unwindToEmployeeDetails" unwindAction="unwindToEmployeesDetailsWithSegue:" id="aeF-vr-8QR"/>
                         <segue destination="aMQ-pD-Gcc" kind="unwind" identifier="unwindToEmployeeDashboard" unwindAction="unwindToEmployeesDashboardWithSegue:" id="r4k-17-lcU"/>
                     </connections>

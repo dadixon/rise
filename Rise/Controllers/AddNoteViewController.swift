@@ -13,6 +13,7 @@ import ChameleonFramework
 
 class AddNoteViewController: UIViewController {
 
+    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var noteTextArea: UITextView!
     @IBOutlet weak var createdDate: UITextField!
     @IBOutlet weak var saveBtn: UIButton!
@@ -35,7 +36,7 @@ class AddNoteViewController: UIViewController {
         SVProgressHUD.setDefaultStyle(.dark)
         SVProgressHUD.setMinimumDismissTimeInterval(3.0)
         
-        title = "Recognition Note"
+        titleLabel.text = "Note for " + employee.fullName!
         saveBtn.setTitle("Save Note", for: .normal)
         dateFormatter.dateFormat = "MM-dd-yyyy"
         createdDate.text = dateFormatter.string(from: Date())
@@ -175,16 +176,16 @@ class AddNoteViewController: UIViewController {
         }
     }
     
-    @IBAction func dateFieldClicked(_ sender: Any) {
-        let datePickerView:UIDatePicker = UIDatePicker()
-        datePickerView.datePickerMode = UIDatePicker.Mode.date
-        createdDate.inputView = datePickerView
-        datePickerView.addTarget(self, action: #selector(self.datePickerFromValueChanged), for: UIControl.Event.valueChanged)
-    }
-    
-    @objc func datePickerFromValueChanged(sender:UIDatePicker) {
-        createdDate.text = dateFormatter.string(from: sender.date)
-    }
+//    @IBAction func dateFieldClicked(_ sender: Any) {
+//        let datePickerView:UIDatePicker = UIDatePicker()
+//        datePickerView.datePickerMode = UIDatePicker.Mode.date
+//        createdDate.inputView = datePickerView
+//        datePickerView.addTarget(self, action: #selector(self.datePickerFromValueChanged), for: UIControl.Event.valueChanged)
+//    }
+//
+//    @objc func datePickerFromValueChanged(sender:UIDatePicker) {
+//        createdDate.text = dateFormatter.string(from: sender.date)
+//    }
     
     @objc func dismissKeyboard() {
         self.view.endEditing(true)

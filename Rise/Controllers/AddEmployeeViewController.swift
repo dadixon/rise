@@ -12,8 +12,7 @@ import SVProgressHUD
 
 class AddEmployeeViewController: UIViewController {
 
-    @IBOutlet weak var firstNameTextField: RiseTextField!
-    @IBOutlet weak var lastNameTextField: RiseTextField!
+    @IBOutlet weak var fullNameTextField: RiseTextField!
     @IBOutlet weak var addEmployeeBtn: UIButton!
     @IBOutlet weak var addMoreBtn: UIButton!
     
@@ -26,9 +25,8 @@ class AddEmployeeViewController: UIViewController {
     }
     
     func setup() {
-        firstNameTextField.placeholder = "First Name"
-        lastNameTextField.placeholder = "Last Name"
-        addEmployeeBtn.setTitle("Save Employee", for: .normal)
+        fullNameTextField.placeholder = "Full Name"
+        addEmployeeBtn.setTitle("Save", for: .normal)
         addMoreBtn.setTitle("Save and Add Another", for: .normal)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(AddEmployeeViewController.dismissKeyboard))
@@ -37,6 +35,8 @@ class AddEmployeeViewController: UIViewController {
         
         SVProgressHUD.setDefaultStyle(.dark)
         SVProgressHUD.setMinimumDismissTimeInterval(3.0)
+        
+        fullNameTextField.becomeFirstResponder()
     }
     
     @IBAction func addEmployeeClicked(_ sender: Any) {
@@ -46,12 +46,9 @@ class AddEmployeeViewController: UIViewController {
             
             // Go back to previous view
             performSegue(withIdentifier: "unwindToEmployeesDashboard", sender: self)
-        } catch ErrorsToThrow.firstNameNotFound {
-            SVProgressHUD.showError(withStatus: "Please give a first name")
-            firstNameTextField.becomeFirstResponder()
-        } catch ErrorsToThrow.lastNameNotFound {
-            SVProgressHUD.showError(withStatus: "Please give a last name")
-            lastNameTextField.becomeFirstResponder()
+        } catch ErrorsToThrow.fullNameNotFound {
+            SVProgressHUD.showError(withStatus: "Please give a full name")
+            fullNameTextField.becomeFirstResponder()
         } catch ErrorsToThrow.canNotSave {
             SVProgressHUD.showError(withStatus: "Error saving item")
         } catch {
@@ -65,14 +62,11 @@ class AddEmployeeViewController: UIViewController {
             try saveEmployee()
             
             //Clear textfields
-            firstNameTextField.text = ""
-            lastNameTextField.text = ""
+            fullNameTextField.text = ""
             
-            firstNameTextField.becomeFirstResponder()
-        } catch ErrorsToThrow.firstNameNotFound {
-            SVProgressHUD.showError(withStatus: "Please give a first name")
-        } catch ErrorsToThrow.lastNameNotFound {
-            SVProgressHUD.showError(withStatus: "Please give a last name")
+            fullNameTextField.becomeFirstResponder()
+        } catch ErrorsToThrow.fullNameNotFound {
+            SVProgressHUD.showError(withStatus: "Please give a full name")
         } catch ErrorsToThrow.canNotSave {
             SVProgressHUD.showError(withStatus: "Error saving item")
         } catch {
@@ -80,22 +74,21 @@ class AddEmployeeViewController: UIViewController {
         }
     }
     
+    @IBAction func cancelPressed(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     @objc func dismissKeyboard() {
         self.view.endEditing(true)
     }
     
     func saveEmployee() throws {
-        guard let firstName = firstNameTextField.text, !firstName.isEmpty else {
-            throw ErrorsToThrow.firstNameNotFound
-        }
-        
-        guard let lastName = lastNameTextField.text, !lastName.isEmpty else {
-            throw ErrorsToThrow.lastNameNotFound
+        guard let fullName = fullNameTextField.text, !fullName.isEmpty else {
+            throw ErrorsToThrow.fullNameNotFound
         }
         
         let employee = Employee(context: context)
-        employee.firstName = firstName
-        employee.lastName = lastName
+        employee.fullName = fullName
         employee.latest = nil
         
         do {

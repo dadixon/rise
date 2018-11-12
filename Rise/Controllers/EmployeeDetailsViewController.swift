@@ -39,8 +39,8 @@ class EmployeeDetailsViewController: UIViewController {
         notes = sortedNotes()
         self.notesTable.reloadData()
         
-        nameLabel.text = employee.firstName! + " " + employee.lastName!
-        employeeDetailsLabel.text = setNoteDetails(count: notes.count, days: userDefault.integer(forKey: "days"))
+        nameLabel.text = employee.fullName!
+        employeeDetailsLabel.text = setNoteDetails(count: notes.count, days: UserDefaults.storeDays)
         selectedNote = nil
     }
     
@@ -67,7 +67,7 @@ class EmployeeDetailsViewController: UIViewController {
     }
     
     func setupNavigation() {
-        self.navigationController!.navigationItem.title = "\(employee.firstName!) \(employee.lastName!)"
+        self.navigationController!.navigationItem.title = "\(employee.fullName!)"
         
         let button1 = UIBarButtonItem(title: "+ Note", style: .plain, target: self, action: #selector(addNoteClicked))
         self.navigationItem.rightBarButtonItem  = button1
@@ -146,10 +146,7 @@ class EmployeeDetailsViewController: UIViewController {
             throw ErrorsToThrow.fullNameNotFound
         }
         
-        let nameArray = fullName.components(separatedBy: " ")
-        
-        employee.setValue(nameArray[0], forKey: "firstName")
-        employee.setValue(nameArray[1], forKey: "lastName")
+        employee.setValue(fullName, forKey: "fullName")
         
         do {
             try context.save()
@@ -220,7 +217,7 @@ extension EmployeeDetailsViewController: UITableViewDelegate {
                     self.deleteNote(note: self.notes[indexPath.row])
                     self.updateLatestNote()
                     self.notes.remove(at: indexPath.row)
-                    self.employeeDetailsLabel.text = self.setNoteDetails(count: self.notes.count, days: self.userDefault.integer(forKey: "days"))
+                    self.employeeDetailsLabel.text = self.setNoteDetails(count: self.notes.count, days: UserDefaults.storeDays)
                     self.updateLatestNote()
                     
                     tableView.deleteRows(at: [indexPath], with: .automatic)

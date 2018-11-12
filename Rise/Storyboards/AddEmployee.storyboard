@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="ryp-Zd-iz0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="j86-vN-OxE">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -18,31 +18,32 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="First Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="EIv-xa-aCL" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
-                                <rect key="frame" x="139" y="64" width="97" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="EIv-xa-aCL" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
+                                <rect key="frame" x="16" y="137" width="343" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="v7b-B2-2Cd"/>
+                                </constraints>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" textContentType="name"/>
                             </textField>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Last Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="JJy-ie-opN" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
-                                <rect key="frame" x="139" y="109" width="97" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vmn-Ip-TSw">
-                                <rect key="frame" x="164" y="229" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vmn-Ip-TSw" customClass="RisePrimaryUIButton" customModule="Rise" customModuleProvider="target">
+                                <rect key="frame" x="16" y="234" width="343" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="Bq5-G8-YHf"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="addEmployeeClicked:" destination="ryp-Zd-iz0" eventType="touchUpInside" id="zQ9-lB-5MV"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EAq-hv-qZ4">
-                                <rect key="frame" x="164" y="260" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EAq-hv-qZ4" customClass="RiseSecondaryUIButton" customModule="Rise" customModuleProvider="target">
+                                <rect key="frame" x="16" y="292" width="343" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="FNT-ad-oeZ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="addMoreEmployeeClicked:" destination="ryp-Zd-iz0" eventType="touchUpInside" id="O1Z-C8-XsN"/>
@@ -50,20 +51,55 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="qW7-PC-B6q" firstAttribute="trailing" secondItem="EAq-hv-qZ4" secondAttribute="trailing" constant="16" id="BGj-5b-uG0"/>
+                            <constraint firstItem="vmn-Ip-TSw" firstAttribute="top" secondItem="EIv-xa-aCL" secondAttribute="bottom" constant="47" id="Eeu-Kk-afQ"/>
+                            <constraint firstItem="EAq-hv-qZ4" firstAttribute="leading" secondItem="qW7-PC-B6q" secondAttribute="leading" constant="16" id="KRd-Lk-cJ9"/>
+                            <constraint firstItem="vmn-Ip-TSw" firstAttribute="leading" secondItem="qW7-PC-B6q" secondAttribute="leading" constant="16" id="Lmw-2D-fYk"/>
+                            <constraint firstItem="qW7-PC-B6q" firstAttribute="trailing" secondItem="vmn-Ip-TSw" secondAttribute="trailing" constant="16" id="Pj3-5f-8WS"/>
+                            <constraint firstItem="qW7-PC-B6q" firstAttribute="trailing" secondItem="EIv-xa-aCL" secondAttribute="trailing" constant="16" id="q1i-f6-qfN"/>
+                            <constraint firstItem="EIv-xa-aCL" firstAttribute="top" secondItem="qW7-PC-B6q" secondAttribute="top" constant="73" id="tkB-jv-eMf"/>
+                            <constraint firstItem="EIv-xa-aCL" firstAttribute="leading" secondItem="qW7-PC-B6q" secondAttribute="leading" constant="16" id="vMX-T6-Kcp"/>
+                            <constraint firstItem="EAq-hv-qZ4" firstAttribute="top" secondItem="vmn-Ip-TSw" secondAttribute="bottom" constant="8" id="vYU-nu-t1l"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="qW7-PC-B6q"/>
                     </view>
+                    <navigationItem key="navigationItem" id="zU2-9v-gIP">
+                        <barButtonItem key="rightBarButtonItem" systemItem="cancel" id="VCD-sQ-vdB">
+                            <connections>
+                                <action selector="cancelPressed:" destination="ryp-Zd-iz0" id="QX4-QW-S9W"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="addEmployeeBtn" destination="vmn-Ip-TSw" id="pri-JN-r2k"/>
                         <outlet property="addMoreBtn" destination="EAq-hv-qZ4" id="Gvb-2h-ZvS"/>
-                        <outlet property="firstNameTextField" destination="EIv-xa-aCL" id="Hwc-d0-jwe"/>
-                        <outlet property="lastNameTextField" destination="JJy-ie-opN" id="1Ms-tg-Xsq"/>
+                        <outlet property="fullNameTextField" destination="EIv-xa-aCL" id="NPV-n2-pUs"/>
                         <segue destination="gUb-LK-Q4x" kind="unwind" identifier="unwindToEmployeesDashboard" unwindAction="unwindToEmployeesDashboardWithSegue:" id="pHs-iF-r79"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qBu-w6-0U1" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="gUb-LK-Q4x" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="217" y="-151"/>
+            <point key="canvasLocation" x="1156" y="-151.57421289355324"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ZKJ-AG-Cdy">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="j86-vN-OxE" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="1AY-Zl-4M5">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="ryp-Zd-iz0" kind="relationship" relationship="rootViewController" id="4ji-ZG-THt"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ODH-mF-o9z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="216.80000000000001" y="-151.57421289355324"/>
         </scene>
     </scenes>
 </document>

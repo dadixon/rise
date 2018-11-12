@@ -51,19 +51,9 @@ class SettingsViewController: FormViewController {
         }
         
         form
-            +++ Section("Header")
-            <<< TextRow() {
-                $0.title = "Header"
-                $0.value = UserDefaults.mainTitle
-                $0.onChange { row in
-                    if let newTitle = row.value {
-                        UserDefaults.set(mainTitle: newTitle)
-                    }
-                }
-            }
-            +++ Section(header: "Reminders", footer: "These settings change when the reminders will display.")
+            +++ Section("Reminders")
             <<< SwitchRow("timeManagedReminders"){
-                $0.title = "Time Managed"
+                $0.title = "On/Off"
                 $0.value = UserDefaults.useTimeManagedReminder
                 $0.onChange{ [unowned self] row in
                     if ((self.form.rowBy(tag: "timeManagedReminders") as? SwitchRow)?.value)! {
@@ -73,13 +63,13 @@ class SettingsViewController: FormViewController {
                     }
                 }
             }
-            <<< DateTimeRow("reminderStartDateTime") {
+            <<< TimeRow("reminderStartDateTime") {
                 $0.hidden = Condition.function(["timeManagedReminders"], { form in
                     let useTimeManagedReminder = ((form.rowBy(tag: "timeManagedReminders") as? SwitchRow)?.value ?? false)
                     UserDefaults.set(useTimeManagedReminder: useTimeManagedReminder)
                     return !((form.rowBy(tag: "timeManagedReminders") as? SwitchRow)?.value ?? false)
                 })
-                $0.title = "Start Date"
+                $0.title = "Alert Time"
                 $0.minimumDate = Date()
                 $0.value = startDate
                 $0.onChange { [unowned self] row in
@@ -91,20 +81,20 @@ class SettingsViewController: FormViewController {
                     }
                 }
                 }
-            <<< PushRow<String>() {
-                $0.hidden = Condition.function(["timeManagedReminders"], { form in
-                    return !((form.rowBy(tag: "timeManagedReminders") as? SwitchRow)?.value ?? false)
-                })
-                $0.title = "Repeats"
-                $0.value = FormItems.repeatFreq
-                $0.options = FormItems.repeatOptions
-                $0.onChange { [unowned self] row in
-                    self.userDefault.set(row.value, forKey: Defaults.RepeatFreq)
-                }
-                }
-                .cellSetup({ (cell, row) in
-                    self.userDefault.set(row.value, forKey: Defaults.RepeatFreq)
-                })
+//            <<< PushRow<String>() {
+//                $0.hidden = Condition.function(["timeManagedReminders"], { form in
+//                    return !((form.rowBy(tag: "timeManagedReminders") as? SwitchRow)?.value ?? false)
+//                })
+//                $0.title = "Repeats"
+//                $0.value = FormItems.repeatFreq
+//                $0.options = FormItems.repeatOptions
+//                $0.onChange { [unowned self] row in
+//                    self.userDefault.set(row.value, forKey: Defaults.RepeatFreq)
+//                }
+//                }
+//                .cellSetup({ (cell, row) in
+//                    self.userDefault.set(row.value, forKey: Defaults.RepeatFreq)
+//                })
             <<< StepperRow()
                 .cellSetup({ (cell, row) in
                     row.title = "Days before reminders"
@@ -128,22 +118,22 @@ class SettingsViewController: FormViewController {
             +++ Section("General")
             <<< StepperRow()
                 .cellSetup({ (cell, row) in
-                    row.title = "Store notes days"
+                    row.title = "Keep notes for \(UserDefaults.storeDays) days"
                     row.value = Double(UserDefaults.storeDays)
-                    cell.valueLabel!.text = "\(Int(row.value!))"
+                    cell.valueLabel!.text = ""
                     cell.stepper.minimumValue = 40.0
                     cell.stepper.maximumValue = 100.0
                 }).cellUpdate({ (cell, row) in
                     if(row.value != nil)
                     {
-                        cell.valueLabel!.text = "\(Int(row.value!))"
+                        cell.valueLabel!.text = ""
                     }
                 }).onChange({ (row) in
                     UserDefaults.set(storeDays: Int(row.value!))
-                    self.userDefault.set(Int(row.value!), forKey: Defaults.StoreDays)
                     if(row.value != nil)
                     {
-                        row.cell.valueLabel!.text = "\(Int(row.value!))"
+                        row.cell.valueLabel!.text = ""
+                        row.title = "Keep notes for \(UserDefaults.storeDays) days"
                     }
                 })
             <<< SwitchRow(){
@@ -155,6 +145,17 @@ class SettingsViewController: FormViewController {
                     }
                 }
             }
+            <<< TextRow() {
+                $0.title = "Eidt Header Name"
+                $0.value = UserDefaults.mainTitle
+                $0.onChange { row in
+                    if let newTitle = row.value {
+                        UserDefaults.set(mainTitle: newTitle)
+                    }
+                }
+            }
+            
+            +++ Section("GET IN TOUCH")
             <<< LabelRow(){ row in
                 row.title = "Send us a message"
                 }.onCellSelection({ (cell, row) in
@@ -220,7 +221,7 @@ class SettingsViewController: FormViewController {
         let content = UNMutableNotificationContent()
         
         //adding title, subtitle, body and badge
-        content.title = "You have \(getNotificationTextCount()) employees you have not recognized in more than \(UserDefaults.storeDays) days."
+        content.title = "You have \(getNotificationTextCount()) employees you have not recognized in more than \(UserDefaults.reminderStartDays) days."
         content.badge = 1
         content.categoryIdentifier = "customIdentifier"
         content.userInfo = ["customData": "fizzbuzz"]

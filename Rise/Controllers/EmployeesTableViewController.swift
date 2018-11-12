@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import SVProgressHUD
+import ChameleonFramework
 
 class EmployeesTableViewController: UITableViewController {
 
@@ -104,8 +105,7 @@ class EmployeesTableViewController: UITableViewController {
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
         filteredEmployees = employees.filter({( employee : Employee) -> Bool in
-            return (employee.firstName?.lowercased().contains(searchText.lowercased()))! ||
-            (employee.lastName?.lowercased().contains(searchText.lowercased()))!
+            return (employee.fullName?.lowercased().contains(searchText.lowercased()))!
         })
         
         tableView.reloadData()
@@ -170,10 +170,10 @@ class EmployeesTableViewController: UITableViewController {
             employee = employees[indexPath.row]
         }
         
-        cell.nameLabel.text = employee.firstName! + " " + employee.lastName!
+        cell.nameLabel.text = employee.fullName!
         
         if let noteCount = employee.notes?.count {
-            cell.noteCountLabel.text = "\(noteCount) Recognition Notes"
+            cell.noteCountLabel.text = "\(noteCount) " + Utility.formatPlural(count: noteCount, object: "Note")
         }
         
         if let latest = employee.latest {
@@ -236,7 +236,7 @@ class EmployeesTableViewController: UITableViewController {
             completionHandler(true)
         })
         
-        viewAction.backgroundColor = UIColor.gray
+        viewAction.backgroundColor = HexColor("6F6F6F")
         
         let config = UISwipeActionsConfiguration(actions: [viewAction])
         

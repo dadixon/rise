@@ -13,12 +13,10 @@ import ChameleonFramework
 import CoreData
 
 enum ErrorsToThrow: Error {
-    case firstNameNotFound
-    case lastNameNotFound
+    case fullNameNotFound
     case noteTextNotFound
     case noteCreatedDateNotFound
     case canNotSave
-    case fullNameNotFound
     case tooFarBehind
 }
 
@@ -109,6 +107,15 @@ class Utility {
             }
         } catch {
             print("Error fetching data from context \(error)")
+        }
+    }
+    
+    static func formatPlural(count: Int, object: String) -> String {
+        switch count {
+        case 1:
+            return object
+        default:
+            return object + "s"
         }
     }
 }
