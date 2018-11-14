@@ -29,6 +29,9 @@
 		A4B988D4218092AF004146E9 /* AddNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4B988D3218092AF004146E9 /* AddNote.storyboard */; };
 		A4BED5AE2195F3DC00689B60 /* AddEmployee.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4BED5AD2195F3DC00689B60 /* AddEmployee.storyboard */; };
 		A4C5FFA62187273300AB0058 /* RiseTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4C5FFA52187273300AB0058 /* RiseTextField.swift */; };
+		A4D2F6A1219C05B1006A3317 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D2F6A0219C05B1006A3317 /* SignUpViewController.swift */; };
+		A4D2F6A3219C06F7006A3317 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D2F6A2219C06F7006A3317 /* RegisterViewController.swift */; };
+		A4D2F6A5219C0779006A3317 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D2F6A4219C0779006A3317 /* ForgotPasswordViewController.swift */; };
 		A4EF60BB214A2B9E00F1E673 /* EmployeesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EF60BA214A2B9E00F1E673 /* EmployeesTableViewController.swift */; };
 		A4EF60BD214A351D00F1E673 /* AddEmployeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EF60BC214A351D00F1E673 /* AddEmployeeViewController.swift */; };
 		A4EF60BF214A3EA000F1E673 /* EmployeeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4EF60BE214A3EA000F1E673 /* EmployeeTableViewCell.swift */; };
@@ -88,6 +91,9 @@
 		A4B988D3218092AF004146E9 /* AddNote.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = AddNote.storyboard; sourceTree = "<group>"; };
 		A4BED5AD2195F3DC00689B60 /* AddEmployee.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddEmployee.storyboard; sourceTree = "<group>"; };
 		A4C5FFA52187273300AB0058 /* RiseTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiseTextField.swift; sourceTree = "<group>"; };
+		A4D2F6A0219C05B1006A3317 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		A4D2F6A2219C06F7006A3317 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
+		A4D2F6A4219C0779006A3317 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		A4EF60BA214A2B9E00F1E673 /* EmployeesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeesTableViewController.swift; sourceTree = "<group>"; };
 		A4EF60BC214A351D00F1E673 /* AddEmployeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEmployeeViewController.swift; sourceTree = "<group>"; };
 		A4EF60BE214A3EA000F1E673 /* EmployeeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeTableViewCell.swift; sourceTree = "<group>"; };
@@ -134,6 +140,9 @@
 				A40F3433214B856600FA0FAA /* EmployeeDetailsViewController.swift */,
 				A40F3435214B94E300FA0FAA /* AddNoteViewController.swift */,
 				A46EDF50218343D700C37CD6 /* SettingsViewController.swift */,
+				A4D2F6A0219C05B1006A3317 /* SignUpViewController.swift */,
+				A4D2F6A2219C06F7006A3317 /* RegisterViewController.swift */,
+				A4D2F6A4219C0779006A3317 /* ForgotPasswordViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -491,9 +500,12 @@
 				A4B5D53B2146F29C00A46D00 /* Rise.xcdatamodeld in Sources */,
 				A4B56EC8214DDC5400D74FE5 /* Utility.swift in Sources */,
 				A46EDF51218343D700C37CD6 /* SettingsViewController.swift in Sources */,
+				A4D2F6A1219C05B1006A3317 /* SignUpViewController.swift in Sources */,
 				A450B1AA2190573500DEA005 /* RiseSecondaryUIButton.swift in Sources */,
+				A4D2F6A5219C0779006A3317 /* ForgotPasswordViewController.swift in Sources */,
 				A4B5D5332146F29C00A46D00 /* AppDelegate.swift in Sources */,
 				A40F3438214B9CA100FA0FAA /* NoteTableViewCell.swift in Sources */,
+				A4D2F6A3219C06F7006A3317 /* RegisterViewController.swift in Sources */,
 				A4001F1C218C56AB007EBC6E /* RiseTextView.swift in Sources */,
 				A4C5FFA62187273300AB0058 /* RiseTextField.swift in Sources */,
 				A4EF60BD214A351D00F1E673 /* AddEmployeeViewController.swift in Sources */,

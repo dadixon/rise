@@ -70,7 +70,6 @@ class SettingsViewController: FormViewController {
                     return !((form.rowBy(tag: "timeManagedReminders") as? SwitchRow)?.value ?? false)
                 })
                 $0.title = "Alert Time"
-                $0.minimumDate = Date()
                 $0.value = startDate
                 $0.onChange { [unowned self] row in
                     self.cancelNotification()
@@ -264,7 +263,7 @@ class SettingsViewController: FormViewController {
         calendar.timeZone = NSTimeZone.local
         
         let dateFrom = calendar.startOfDay(for: Date())
-        let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
+        let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.reminderStartDays, to: dateFrom)
         let noNotePredicate = NSPredicate(format: "latest == nil")
         let storeDaysPredicate = NSPredicate(format: "latest < %@", dateTo! as NSDate)
         let datePredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])

@@ -176,16 +176,24 @@ class AddNoteViewController: UIViewController {
         }
     }
     
-//    @IBAction func dateFieldClicked(_ sender: Any) {
-//        let datePickerView:UIDatePicker = UIDatePicker()
-//        datePickerView.datePickerMode = UIDatePicker.Mode.date
-//        createdDate.inputView = datePickerView
-//        datePickerView.addTarget(self, action: #selector(self.datePickerFromValueChanged), for: UIControl.Event.valueChanged)
-//    }
-//
-//    @objc func datePickerFromValueChanged(sender:UIDatePicker) {
-//        createdDate.text = dateFormatter.string(from: sender.date)
-//    }
+    @IBAction func dateFieldClicked(_ sender: Any) {
+        let datePickerView:UIDatePicker = UIDatePicker()
+        datePickerView.datePickerMode = UIDatePicker.Mode.date
+        var calendar = Calendar.current
+        
+        calendar.timeZone = NSTimeZone.local
+        
+        let dateFrom = calendar.startOfDay(for: Date())
+        let minimumDate = calendar.date(byAdding: .day, value: -3, to: dateFrom)
+        
+        datePickerView.minimumDate = minimumDate
+        createdDate.inputView = datePickerView
+        datePickerView.addTarget(self, action: #selector(self.datePickerFromValueChanged), for: UIControl.Event.valueChanged)
+    }
+
+    @objc func datePickerFromValueChanged(sender:UIDatePicker) {
+        createdDate.text = dateFormatter.string(from: sender.date)
+    }
     
     @objc func dismissKeyboard() {
         self.view.endEditing(true)

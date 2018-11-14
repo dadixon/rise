@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import SVProgressHUD
 import ChameleonFramework
+import Firebase
 
 class EmployeesTableViewController: UITableViewController {
 
@@ -24,10 +25,20 @@ class EmployeesTableViewController: UITableViewController {
     let searchController = UISearchController(searchResultsController: nil)
     var deleteEmployeeIndexPath: IndexPath? = nil
     var selectedEmployeeIndexPath: IndexPath? = nil
+    var user: User!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        Auth.auth().addStateDidChangeListener({ (auth, user) in
+            guard let user = user else {
+                self.performSegue(withIdentifier: "viewLogin", sender: nil)
+                return
+            }
+            
+            self.user = user
+        })
+        
         self.clearsSelectionOnViewWillAppear = true
         self.tableView.tableFooterView = UIView()
 

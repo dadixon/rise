@@ -7,24 +7,38 @@
 //
 
 import UIKit
+import Firebase
+import SVProgressHUD
 
 class LoginViewController: UIViewController {
 
+    @IBOutlet weak var emailTextField: RiseTextField!
+    @IBOutlet weak var passwordTextField: RiseTextField!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+    }
+
+    @IBAction func loginPressed(_ sender: Any) {
+        guard let email = emailTextField.text else {
+            return
+        }
+        guard let password = passwordTextField.text else {
+            return
+        }
+        
+        Auth.auth().signIn(withEmail: email, password: password, completion: { (user, error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: error?.localizedDescription)
+            } else {
+                self.performSegue(withIdentifier: "showList", sender: nil)
+                SVProgressHUD.dismiss()
+            }
+        })
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @IBAction func signUpPressed(_ sender: Any) {
+        self.performSegue(withIdentifier: "showSignUp", sender: self)
     }
-    */
-
 }

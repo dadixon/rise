@@ -44,7 +44,7 @@
                                     <action selector="saveNoteClicked:" destination="IZE-qZ-814" eventType="touchUpInside" id="PaE-9t-uth"/>
                                 </connections>
                             </button>
-                            <textField hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fy7-KS-PQB" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fy7-KS-PQB" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
                                 <rect key="frame" x="77" y="311" width="221" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
