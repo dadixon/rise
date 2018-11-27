@@ -8,6 +8,7 @@ target 'Rise' do
   # Pods for Rise
   pod 'ChameleonFramework/Swift', :git => 'https://github.com/ViccAlexander/Chameleon.git'
   pod 'Firebase/Core'
+  pod 'Firebase/Database'
   pod 'Firebase/Auth'
   pod 'SVProgressHUD'
   pod 'Eureka'

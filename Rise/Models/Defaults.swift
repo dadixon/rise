@@ -18,7 +18,12 @@ struct Defaults {
     static let StoreDays = "storeDays"
     static let SortOrder = "sortOrder"
     static let MainTitle = "mainTitle"
-    
+    static let UserFirstName = "userFirstName"
+    static let UserLastName = "userLastName"
+    static let UserPhone = "userPhone"
+    static let UserCompany = "userCompany"
+    static let UserAmount = "userAmount"
+    static let UserUID = "userUID"
 }
 
 extension UserDefaults {
@@ -79,5 +84,59 @@ extension UserDefaults {
     class func set(mainTitle: String) {
         let userDefaults = UserDefaults.standard
         userDefaults.set(mainTitle, forKey: Defaults.MainTitle)
+    }
+    
+    class var userFirstName: String {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.string(forKey: Defaults.UserFirstName)!
+    }
+    class func set(userFirstName: String) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(userFirstName, forKey: Defaults.UserFirstName)
+    }
+    
+    class var userLastName: String {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.string(forKey: Defaults.UserLastName)!
+    }
+    class func set(userLastName: String) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(userLastName, forKey: Defaults.UserLastName)
+    }
+    
+    class var userPhone: String {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.string(forKey: Defaults.UserPhone)!
+    }
+    class func set(userPhone: String) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(userPhone, forKey: Defaults.UserPhone)
+    }
+    
+    class var userCompany: String {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.string(forKey: Defaults.UserCompany)!
+    }
+    class func set(userCompany: String) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(userCompany, forKey: Defaults.UserCompany)
+    }
+    
+    class var userAmount: String {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.string(forKey: Defaults.UserAmount)!
+    }
+    class func set(userAmount: String) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(userAmount, forKey: Defaults.UserAmount)
+    }
+    
+    class var userUID: String {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.string(forKey: Defaults.UserUID)!
+    }
+    class func set(userUID: String) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(userUID, forKey: Defaults.UserUID)
     }
 }

@@ -12,6 +12,7 @@ import UserNotifications
 import MessageUI
 import SVProgressHUD
 import CoreData
+import Firebase
 
 class SettingsViewController: FormViewController {
 
@@ -145,7 +146,7 @@ class SettingsViewController: FormViewController {
                 }
             }
             <<< TextRow() {
-                $0.title = "Eidt Header Name"
+                $0.title = "Edit Header Name"
                 $0.value = UserDefaults.mainTitle
                 $0.onChange { row in
                     if let newTitle = row.value {
@@ -158,32 +159,98 @@ class SettingsViewController: FormViewController {
             <<< LabelRow(){ row in
                 row.title = "Send us a message"
                 }.onCellSelection({ (cell, row) in
-                    print("Change email")
                     self.sendEmail()
                 })
             
             +++ Section("Account")
-            <<< LabelRow(){ row in
+            <<< ButtonRow(){ row in
+                row.title = "General"
+                row.presentationMode = .segueName(segueName: "showGeneral", onDismiss: nil)
+            }
+            <<< ButtonRow(){ row in
                 row.title = "Change Email Account"
-                }.onCellSelection({ (cell, row) in
-                    print("Change email")
-                    //                self.performSegue(withIdentifier: "yourSegue", sender: self)
-                })
-            <<< LabelRow(){ row in
+                row.presentationMode = .segueName(segueName: "showChangeEmail", onDismiss: nil)
+            }
+            <<< ButtonRow(){ row in
                 row.title = "Change Password"
-                }.onCellSelection({ (cell, row) in
-                    print("Change password")
-                    //                    self.performSegue(withIdentifier: "yourSegue", sender: self)
-                })
+                row.presentationMode = .segueName(segueName: "showChangePassword", onDismiss: nil)
+            }
             <<< ActionSheetRow<String>() {
                 $0.title = "Delete Account"
                 $0.selectorTitle = "Are you sure you want to delete your account?"
-                $0.options = ["Yes"]
+                $0.options = ["No", "Yes"]
+                $0.onChange({ [unowned self] row in
+                    if let value = row.value {
+                        if value == "Yes" {
+                            // Delete account
+                            let user = Auth.auth().currentUser
+
+                            user?.delete { error in
+                                if let error = error {
+                                    if let errCode = AuthErrorCode(rawValue: error._code) {
+                                        switch errCode {
+                                        case .requiresRecentLogin:
+                                            self.performSegue(withIdentifier: "showReLogin", sender: self)
+                                        default:
+                                            print(error._code)
+                                            SVProgressHUD.showError(withStatus: error.localizedDescription)
+                                        }
+                                    }
+                                } else {
+                                    // Delete data from phone
+                                    self.deleteEmployees()
+                                    
+                                    // Delete data from Firebase
+                                    self.deleteFromDatabase()
+                                    self.dismiss(animated: true, completion: nil)
+                                }
+                            }
+                        }
+                    }
+                }).cellUpdate({ (cell, row) in
+                    if(row.value != nil)
+                    {
+                        cell.detailTextLabel?.text = ""
+                    }
+                    if let value = row.value {
+                        if value == "Yes" {
+                            // Delete account
+                            let user = Auth.auth().currentUser
+                            
+                            user?.delete { error in
+                                if let error = error {
+                                    if let errCode = AuthErrorCode(rawValue: error._code) {
+                                        switch errCode {
+                                        case .requiresRecentLogin:
+                                            self.performSegue(withIdentifier: "showReLogin", sender: self)
+                                        default:
+                                            print(error._code)
+                                            SVProgressHUD.showError(withStatus: error.localizedDescription)
+                                        }
+                                    }
+                                } else {
+                                    // Delete data from phone
+                                    self.deleteEmployees()
+                                    
+                                    // Delete data from Firebase
+                                    self.deleteFromDatabase()
+                                    self.dismiss(animated: true, completion: nil)
+                                }
+                            }
+                        }
+                    }
+                })
             }
             <<< LabelRow(){ row in
                 row.title = "Logout"
                 }.onCellSelection({ (cell, row) in
                     print("Logout")
+                    do {
+                        try Auth.auth().signOut()
+                        self.dismiss(animated: true, completion: nil)
+                    } catch let signOutError as NSError {
+                        print ("Error signing out: %@", signOutError)
+                    }
                 })
 //            +++ Section("Pre-fill")
 //            <<< ButtonRow { row in
@@ -218,9 +285,16 @@ class SettingsViewController: FormViewController {
     
     private func createNotification(date: Date) {
         let content = UNMutableNotificationContent()
+        var message = ""
+        
+        if getNotificationTextCount() == 0 {
+            message = "Keep up the great work!"
+        } else {
+            message = "\(getNotificationTextCount()) people need recognition today!"
+        }
         
         //adding title, subtitle, body and badge
-        content.title = "You have \(getNotificationTextCount()) employees you have not recognized in more than \(UserDefaults.reminderStartDays) days."
+        content.title = message
         content.badge = 1
         content.categoryIdentifier = "customIdentifier"
         content.userInfo = ["customData": "fizzbuzz"]
@@ -265,7 +339,7 @@ class SettingsViewController: FormViewController {
         let dateFrom = calendar.startOfDay(for: Date())
         let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.reminderStartDays, to: dateFrom)
         let noNotePredicate = NSPredicate(format: "latest == nil")
-        let storeDaysPredicate = NSPredicate(format: "latest < %@", dateTo! as NSDate)
+        let storeDaysPredicate = NSPredicate(format: "latest <= %@", dateTo! as NSDate)
         let datePredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
         let request: NSFetchRequest<Employee> = Employee.fetchRequest()
         
@@ -287,17 +361,19 @@ class SettingsViewController: FormViewController {
     
     func sendEmail() {
         if MFMailComposeViewController.canSendMail() {
+            let user = Auth.auth().currentUser
             let body = """
-                <p>Name: {username}<br>
-                Company: {company name}<br>
-                Phone: {phone number}<br>
-                Email: {email}</p>
+            <p>Name: \(UserDefaults.userFirstName) \(UserDefaults.userLastName)<br>
+                Company: \(UserDefaults.userCompany)<br>
+                Phone: \(UserDefaults.userPhone)<br>
+                Email: \(String(describing: user!.email))</p>
 
                 <p>Message: </p>
             """
             let mail = MFMailComposeViewController()
             mail.mailComposeDelegate = self
             mail.setToRecipients(["info@myemployees.com"])
+            mail.setSubject("Rise App Message")
             mail.setMessageBody(body, isHTML: true)
             
             present(mail, animated: true)
@@ -309,6 +385,27 @@ class SettingsViewController: FormViewController {
     
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         controller.dismiss(animated: true)
+    }
+    
+    private func deleteEmployees() {
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        
+        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Employee")
+        let request = NSBatchDeleteRequest(fetchRequest: fetch)
+        
+        do {
+            try context.execute(request)
+        } catch {
+            SVProgressHUD.showError(withStatus: "Something went wrong")
+        }
+    }
+    
+    private func deleteFromDatabase() {
+        let ref = Database.database().reference()
+        
+        ref.child("clients").child(UserDefaults.userUID)
+        
+        ref.removeValue()
     }
 }
 

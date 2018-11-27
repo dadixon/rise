@@ -11,6 +11,10 @@
 		A40F3434214B856600FA0FAA /* EmployeeDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40F3433214B856600FA0FAA /* EmployeeDetailsViewController.swift */; };
 		A40F3436214B94E300FA0FAA /* AddNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40F3435214B94E300FA0FAA /* AddNoteViewController.swift */; };
 		A40F3438214B9CA100FA0FAA /* NoteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40F3437214B9CA100FA0FAA /* NoteTableViewCell.swift */; };
+		A40FD40521AD525F00EDF81C /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40FD40421AD525F00EDF81C /* ChangePasswordViewController.swift */; };
+		A40FD40721AD585E00EDF81C /* GeneralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40FD40621AD585E00EDF81C /* GeneralViewController.swift */; };
+		A41EAEB821A8279E005EE8F7 /* ReLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A41EAEB721A8279E005EE8F7 /* ReLoginViewController.swift */; };
+		A4311B3621A58ADD00E3F0D1 /* ChangeEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4311B3521A58ADD00E3F0D1 /* ChangeEmailViewController.swift */; };
 		A450B1A8219050C200DEA005 /* RisePrimaryUIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A450B1A7219050C200DEA005 /* RisePrimaryUIButton.swift */; };
 		A450B1AA2190573500DEA005 /* RiseSecondaryUIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A450B1A92190573500DEA005 /* RiseSecondaryUIButton.swift */; };
 		A450B1AC21905B8100DEA005 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A450B1AB21905B8100DEA005 /* LoginViewController.swift */; };
@@ -67,6 +71,10 @@
 		A40F3433214B856600FA0FAA /* EmployeeDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeDetailsViewController.swift; sourceTree = "<group>"; };
 		A40F3435214B94E300FA0FAA /* AddNoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNoteViewController.swift; sourceTree = "<group>"; };
 		A40F3437214B9CA100FA0FAA /* NoteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTableViewCell.swift; sourceTree = "<group>"; };
+		A40FD40421AD525F00EDF81C /* ChangePasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewController.swift; sourceTree = "<group>"; };
+		A40FD40621AD585E00EDF81C /* GeneralViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralViewController.swift; sourceTree = "<group>"; };
+		A41EAEB721A8279E005EE8F7 /* ReLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReLoginViewController.swift; sourceTree = "<group>"; };
+		A4311B3521A58ADD00E3F0D1 /* ChangeEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeEmailViewController.swift; sourceTree = "<group>"; };
 		A450B1A7219050C200DEA005 /* RisePrimaryUIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RisePrimaryUIButton.swift; sourceTree = "<group>"; };
 		A450B1A92190573500DEA005 /* RiseSecondaryUIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiseSecondaryUIButton.swift; sourceTree = "<group>"; };
 		A450B1AB21905B8100DEA005 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -136,13 +144,17 @@
 			children = (
 				A450B1AB21905B8100DEA005 /* LoginViewController.swift */,
 				A4EF60BA214A2B9E00F1E673 /* EmployeesTableViewController.swift */,
-				A4EF60BC214A351D00F1E673 /* AddEmployeeViewController.swift */,
 				A40F3433214B856600FA0FAA /* EmployeeDetailsViewController.swift */,
+				A4EF60BC214A351D00F1E673 /* AddEmployeeViewController.swift */,
 				A40F3435214B94E300FA0FAA /* AddNoteViewController.swift */,
 				A46EDF50218343D700C37CD6 /* SettingsViewController.swift */,
 				A4D2F6A0219C05B1006A3317 /* SignUpViewController.swift */,
 				A4D2F6A2219C06F7006A3317 /* RegisterViewController.swift */,
 				A4D2F6A4219C0779006A3317 /* ForgotPasswordViewController.swift */,
+				A41EAEB721A8279E005EE8F7 /* ReLoginViewController.swift */,
+				A4311B3521A58ADD00E3F0D1 /* ChangeEmailViewController.swift */,
+				A40FD40421AD525F00EDF81C /* ChangePasswordViewController.swift */,
+				A40FD40621AD585E00EDF81C /* GeneralViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -472,6 +484,7 @@
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -481,6 +494,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -497,6 +511,7 @@
 			files = (
 				A40F3436214B94E300FA0FAA /* AddNoteViewController.swift in Sources */,
 				A450B1A8219050C200DEA005 /* RisePrimaryUIButton.swift in Sources */,
+				A41EAEB821A8279E005EE8F7 /* ReLoginViewController.swift in Sources */,
 				A4B5D53B2146F29C00A46D00 /* Rise.xcdatamodeld in Sources */,
 				A4B56EC8214DDC5400D74FE5 /* Utility.swift in Sources */,
 				A46EDF51218343D700C37CD6 /* SettingsViewController.swift in Sources */,
@@ -505,15 +520,18 @@
 				A4D2F6A5219C0779006A3317 /* ForgotPasswordViewController.swift in Sources */,
 				A4B5D5332146F29C00A46D00 /* AppDelegate.swift in Sources */,
 				A40F3438214B9CA100FA0FAA /* NoteTableViewCell.swift in Sources */,
+				A40FD40521AD525F00EDF81C /* ChangePasswordViewController.swift in Sources */,
 				A4D2F6A3219C06F7006A3317 /* RegisterViewController.swift in Sources */,
 				A4001F1C218C56AB007EBC6E /* RiseTextView.swift in Sources */,
 				A4C5FFA62187273300AB0058 /* RiseTextField.swift in Sources */,
 				A4EF60BD214A351D00F1E673 /* AddEmployeeViewController.swift in Sources */,
 				A40F3434214B856600FA0FAA /* EmployeeDetailsViewController.swift in Sources */,
+				A4311B3621A58ADD00E3F0D1 /* ChangeEmailViewController.swift in Sources */,
 				A450B1AC21905B8100DEA005 /* LoginViewController.swift in Sources */,
 				A4EF60BF214A3EA000F1E673 /* EmployeeTableViewCell.swift in Sources */,
 				A4EF60BB214A2B9E00F1E673 /* EmployeesTableViewController.swift in Sources */,
 				A46EDF5521834BE900C37CD6 /* Defaults.swift in Sources */,
+				A40FD40721AD585E00EDF81C /* GeneralViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

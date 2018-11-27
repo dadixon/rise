@@ -29,15 +29,6 @@ class EmployeesTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        Auth.auth().addStateDidChangeListener({ (auth, user) in
-            guard let user = user else {
-                self.performSegue(withIdentifier: "viewLogin", sender: nil)
-                return
-            }
-            
-            self.user = user
-        })
         
         self.clearsSelectionOnViewWillAppear = true
         self.tableView.tableFooterView = UIView()
@@ -49,10 +40,19 @@ class EmployeesTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        title = UserDefaults.mainTitle
-        
-        employees = getEmployees()
-        self.tableView.reloadData()
+        Auth.auth().addStateDidChangeListener({ (auth, user) in
+            guard let user = user else {
+                self.performSegue(withIdentifier: "viewLogin", sender: nil)
+                return
+            }
+            
+            self.user = user
+            
+            self.title = UserDefaults.mainTitle
+            
+            self.employees = self.getEmployees()
+            self.tableView.reloadData()
+        })
     }
     
     private func setup() {
