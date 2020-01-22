@@ -24,6 +24,9 @@ struct Defaults {
     static let UserCompany = "userCompany"
     static let UserAmount = "userAmount"
     static let UserUID = "userUID"
+    static let UserEmail = "userEmail"
+    static let UserCreatedDate = "userCreatedDate"
+    static let UserIsNew = "userIsNew"
 }
 
 extension UserDefaults {
@@ -42,10 +45,6 @@ extension UserDefaults {
     }
     class func set(timeManagedReminder: Date) {
         let userDefaults = UserDefaults.standard
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ssz"
-//        let dateString = dateFormatter.string(from: timeManagedReminder)
-//        let formattedDate = dateFormatter.date(from: dateString)
         userDefaults.set(timeManagedReminder, forKey: Defaults.TimeManagedReminder)
     }
     
@@ -65,7 +64,9 @@ extension UserDefaults {
     class func set(storeDays: Int) {
         let userDefaults = UserDefaults.standard
         userDefaults.set(storeDays, forKey: Defaults.StoreDays)
-        Utility.removeOldNotes()
+        if storeDays < 101 {
+            Utility.removeOldNotes()
+        }
     }
     
     class var reminderStartDays: Int {
@@ -133,10 +134,37 @@ extension UserDefaults {
     
     class var userUID: String {
         let userDefaults = UserDefaults.standard
-        return userDefaults.string(forKey: Defaults.UserUID)!
+        return userDefaults.string(forKey: Defaults.UserUID) ?? ""
     }
     class func set(userUID: String) {
         let userDefaults = UserDefaults.standard
         userDefaults.set(userUID, forKey: Defaults.UserUID)
+    }
+    
+    class var userEmail: String {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.string(forKey: Defaults.UserEmail)!
+    }
+    class func set(userEmail: String) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(userEmail, forKey: Defaults.UserEmail)
+    }
+    
+    class var userCreatedDate: Int {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.integer(forKey: Defaults.UserCreatedDate)
+    }
+    class func set(userCreatedDate: Int) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(userCreatedDate, forKey: Defaults.UserCreatedDate)
+    }
+    
+    class var userIsNew: Bool {
+        let userDefaults = UserDefaults.standard
+        return userDefaults.bool(forKey: Defaults.UserIsNew)
+    }
+    class func set(userIsNew: Bool) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(userIsNew, forKey: Defaults.UserIsNew)
     }
 }

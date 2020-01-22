@@ -42,7 +42,7 @@ class SignUpViewController: UIViewController {
         phoneTextField.placeholder = "Phone Number"
         companyTextField.placeholder = "Company"
         
-        amountOfPeoplePickList = ["Less than 25 \(UserDefaults.mainTitle)", "25-50", "51-75", "76-100"]
+        amountOfPeoplePickList = ["Less than 25", "25-50", "51-75", "76-100", "100+"]
         let amountPicker = UIPickerView()
         amountPicker.delegate = self
         
@@ -54,12 +54,18 @@ class SignUpViewController: UIViewController {
         loginBtn.setTitle("Already have an acount? Login", for: .normal)
     }
     
-    private func saveUserData(firstName: String, lastName: String, phone: String, company: String, amountOfPeople: String) {
-        UserDefaults.set(userFirstName: firstName)
-        UserDefaults.set(userLastName: lastName)
-        UserDefaults.set(userPhone: phone)
-        UserDefaults.set(userCompany: company)
-        UserDefaults.set(userAmount: amountOfPeople)
+    private func saveUserData(firstName: String,
+                              lastName: String,
+                              phone: String,
+                              company: String,
+                              amountOfPeople: String) {
+        let userDefaults = UserDefaults.standard
+        
+        userDefaults.setValue(firstName, forKey: "tempFirstName")
+        userDefaults.setValue(lastName, forKey: "tempLastName")
+        userDefaults.setValue(phone, forKey: "tempPhone")
+        userDefaults.setValue(company, forKey: "tempCompany")
+        userDefaults.setValue(amountOfPeople, forKey: "tempAmountOfPeople")
     }
     
     @objc func dismissKeyboard() {
@@ -92,7 +98,11 @@ class SignUpViewController: UIViewController {
             return
         }
         
-        saveUserData(firstName: firstName, lastName: lastName, phone: phone, company: company, amountOfPeople: amountOfPeople)
+        saveUserData(firstName: firstName,
+                     lastName: lastName,
+                     phone: phone,
+                     company: company,
+                     amountOfPeople: amountOfPeople)
         self.performSegue(withIdentifier: "showRegister", sender: self)
     }
     

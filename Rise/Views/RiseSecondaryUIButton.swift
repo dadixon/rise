@@ -7,11 +7,10 @@
 //
 
 import UIKit
-import ChameleonFramework
 
 class RiseSecondaryUIButton: UIButton {
 
-    let borderColor = HexColor("99FBDA")!
+    let borderColor = Design.Color.Primary.aquamarine
     
     public override func awakeFromNib() {
         
@@ -33,29 +32,6 @@ class RiseSecondaryUIButton: UIButton {
         
         self.setTitleColor(UIColor.black, for: .normal)
     }
-    
-    // MARK: Public interface
-    
-    //    @IBInspectable public var cornerRadius: CGFloat = 8 {
-    //        didSet {
-    //            self.setNeedsLayout()
-    //        }
-    //    }
-    //
-    //    @IBInspectable public var bgColor: UIColor = UIColor.white {
-    //        didSet {
-    //            self.setNeedsLayout()
-    //        }
-    //    }
-    //
-    //    @IBInspectable var borderColor: UIColor? {
-    //        get {
-    //            return UIColor(cgColor: self.layer.borderColor!)
-    //        }
-    //        set {
-    //            self.layer.borderColor = newValue?.cgColor
-    //        }
-    //    }
     
     // MARK: Overrides
     

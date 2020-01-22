@@ -49,6 +49,7 @@ class LoginViewController: UIViewController {
                 guard let user = authResult?.user else { return }
                 
                 UserDefaults.set(userUID: user.uid)
+                self.setGeneralData()
                 self.performSegue(withIdentifier: "showList", sender: nil)
                 SVProgressHUD.dismiss()
             }
@@ -65,5 +66,36 @@ class LoginViewController: UIViewController {
     
     @objc func dismissKeyboard() {
         self.view.endEditing(true)
+    }
+    
+    private func setGeneralData() {
+        let ref = Database.database().reference()
+        ref.child("clients").child(UserDefaults.userUID).observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let values = snapshot.value as? [String: Any] else {
+                return
+            }
+            
+            let value = snapshot.value as? NSDictionary
+            let firstName = value?["First_Name"] as? String ?? ""
+            let lastName = value?["Last_Name"] as? String ?? ""
+            let phone = value?["Phone"] as? String ?? ""
+            let company = value?["Company"] as? String ?? ""
+            let email = value?["Email"] as? String ?? ""
+            let amountOfPeople = value?["Number_of_People"] as? String ?? ""
+            let createdDate = (value?["Date"] as? Int)!
+            let newUser = (value?["New"] as? Bool)!
+            
+            UserDefaults.set(userFirstName: firstName)
+            UserDefaults.set(userLastName: lastName)
+            UserDefaults.set(userPhone: phone)
+            UserDefaults.set(userCompany: company)
+            UserDefaults.set(userEmail: email)
+            UserDefaults.set(userAmount: amountOfPeople)
+            UserDefaults.set(userCreatedDate: createdDate)
+            UserDefaults.set(userIsNew: newUser)
+
+        }) { (error) in
+            print(error.localizedDescription)
+        }
     }
 }

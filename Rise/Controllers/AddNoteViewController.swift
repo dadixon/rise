@@ -9,7 +9,6 @@
 import UIKit
 import CoreData
 import SVProgressHUD
-import ChameleonFramework
 
 class AddNoteViewController: UIViewController {
 
@@ -17,6 +16,8 @@ class AddNoteViewController: UIViewController {
     @IBOutlet weak var noteTextArea: UITextView!
     @IBOutlet weak var createdDate: UITextField!
     @IBOutlet weak var saveBtn: UIButton!
+    @IBOutlet weak var topConstraintDate: NSLayoutConstraint!
+    @IBOutlet weak var bottomConstraintDate: NSLayoutConstraint!
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let dateFormatter = DateFormatter()
@@ -30,6 +31,18 @@ class AddNoteViewController: UIViewController {
         super.viewDidLoad()
 
         setup()
+        
+        if UIDevice.current.modelName == "iPhone 4" ||
+            UIDevice.current.modelName == "iPhone 4s" ||
+            UIDevice.current.modelName == "iPhone 5" ||
+            UIDevice.current.modelName == "iPhone 5c" ||
+            UIDevice.current.modelName == "iPhone 5s" {
+            topConstraintDate.constant = 16
+            bottomConstraintDate.constant = 16
+        } else {
+            topConstraintDate.constant = 28
+            bottomConstraintDate.constant = 21
+        }
     }
     
     private func setup() {
@@ -69,7 +82,7 @@ class AddNoteViewController: UIViewController {
             return
         }
         
-        if diffInDays > UserDefaults.storeDays {
+        if diffInDays > UserDefaults.storeDays && UserDefaults.storeDays < 101 {
            throw ErrorsToThrow.tooFarBehind
         } else {
             let note = Note(context: context)
@@ -112,7 +125,7 @@ class AddNoteViewController: UIViewController {
             return
         }
         
-        if diffInDays > UserDefaults.storeDays {
+        if diffInDays > UserDefaults.storeDays && UserDefaults.storeDays < 101 {
             throw ErrorsToThrow.tooFarBehind
         } else {
             note.setValue(text, forKey: "text")
@@ -187,6 +200,8 @@ class AddNoteViewController: UIViewController {
         let minimumDate = calendar.date(byAdding: .day, value: -3, to: dateFrom)
         
         datePickerView.minimumDate = minimumDate
+        datePickerView.maximumDate = dateFrom
+        
         createdDate.inputView = datePickerView
         datePickerView.addTarget(self, action: #selector(self.datePickerFromValueChanged), for: UIControl.Event.valueChanged)
     }

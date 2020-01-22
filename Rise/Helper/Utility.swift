@@ -9,7 +9,6 @@
 import Foundation
 import UIKit
 import SVProgressHUD
-import ChameleonFramework
 import CoreData
 
 enum ErrorsToThrow: Error {
@@ -49,11 +48,11 @@ class Utility {
         }
         
         if diffInDays >= 0 && diffInDays < UserDefaults.reminderStartDays - 2 {
-            return HexColor("99FBDA")!
+            return Design.Color.Primary.aquamarine
         } else if diffInDays >= UserDefaults.reminderStartDays - 2 && diffInDays < UserDefaults.reminderStartDays {
-            return HexColor("99F5FB")!
+            return Design.Color.ListNotes.aqua
         } else if diffInDays >= UserDefaults.reminderStartDays {
-            return HexColor("85C2F8")!
+            return Design.Color.ListNotes.lightBlue
         }
         
         return UIColor.white
@@ -117,5 +116,11 @@ class Utility {
         default:
             return object + "s"
         }
+    }
+}
+
+extension UIColor {
+    static func rgba(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) -> UIColor {
+        return UIColor(red: red/255, green: green/255, blue: blue/255, alpha: alpha)
     }
 }

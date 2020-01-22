@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import CoreData
 import SVProgressHUD
 
 class AddEmployeeViewController: UIViewController {
@@ -15,9 +14,7 @@ class AddEmployeeViewController: UIViewController {
     @IBOutlet weak var fullNameTextField: RiseTextField!
     @IBOutlet weak var addEmployeeBtn: UIButton!
     @IBOutlet weak var addMoreBtn: UIButton!
-    
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -40,38 +37,35 @@ class AddEmployeeViewController: UIViewController {
     }
     
     @IBAction func addEmployeeClicked(_ sender: Any) {
-        do {
-            // Save Employee
-             try saveEmployee()
-            
-            // Go back to previous view
-            performSegue(withIdentifier: "unwindToEmployeesDashboard", sender: self)
-        } catch ErrorsToThrow.fullNameNotFound {
+        guard let fullName = fullNameTextField.text, !fullName.isEmpty else {
             SVProgressHUD.showError(withStatus: "Please give a full name")
             fullNameTextField.becomeFirstResponder()
-        } catch ErrorsToThrow.canNotSave {
-            SVProgressHUD.showError(withStatus: "Error saving item")
-        } catch {
-            
+            return
+        }
+        
+        CoreDataManager.shared.insertEmployee(name: fullName, userID: UserDefaults.userUID) { (error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "Error saving item")
+            } else {
+                self.performSegue(withIdentifier: "unwindToEmployeesDashboard", sender: self)
+            }
         }
     }
     
     @IBAction func addMoreEmployeeClicked(_ sender: Any) {
-        do {
-            // Save Employee
-            try saveEmployee()
-            
-            //Clear textfields
-            fullNameTextField.text = ""
-            
-            fullNameTextField.becomeFirstResponder()
-        } catch ErrorsToThrow.fullNameNotFound {
+        guard let fullName = fullNameTextField.text, !fullName.isEmpty else {
             SVProgressHUD.showError(withStatus: "Please give a full name")
-        } catch ErrorsToThrow.canNotSave {
-            SVProgressHUD.showError(withStatus: "Error saving item")
-        } catch {
-            
+            return
         }
+        
+        CoreDataManager.shared.insertEmployee(name: fullName, userID: UserDefaults.userUID) { (error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "Error saving item")
+            }
+        }
+            
+        fullNameTextField.text = ""
+        fullNameTextField.becomeFirstResponder()
     }
     
     @IBAction func cancelPressed(_ sender: Any) {
@@ -82,21 +76,22 @@ class AddEmployeeViewController: UIViewController {
         self.view.endEditing(true)
     }
     
-    func saveEmployee() throws {
-        guard let fullName = fullNameTextField.text, !fullName.isEmpty else {
-            throw ErrorsToThrow.fullNameNotFound
-        }
-        
-        let employee = Employee(context: context)
-        employee.fullName = fullName
-        employee.latest = nil
-        
-        do {
-            try context.save()
-            print("saved")
-        } catch {
-            print("Error saving context \(error)")
-            throw ErrorsToThrow.canNotSave
-        }
-    }
+//    func saveEmployee() throws {
+//        guard let fullName = fullNameTextField.text, !fullName.isEmpty else {
+//            throw ErrorsToThrow.fullNameNotFound
+//        }
+//
+//        let employee = Employee(context: context)
+//        employee.fullName = fullName
+//        employee.latest = nil
+//        employee.userId = UserDefaults.userUID
+//
+//        do {
+//            try context.save()
+//            print("saved")
+//        } catch {
+//            print("Error saving context \(error)")
+//            throw ErrorsToThrow.canNotSave
+//        }
+//    }
 }

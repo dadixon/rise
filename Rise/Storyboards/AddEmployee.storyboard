@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="EIv-xa-aCL" customClass="RiseTextField" customModule="Rise" customModuleProvider="target">
-                                <rect key="frame" x="16" y="137" width="343" height="50"/>
+                                <rect key="frame" x="16" y="80" width="343" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="v7b-B2-2Cd"/>
                                 </constraints>
@@ -28,7 +28,7 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" textContentType="name"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vmn-Ip-TSw" customClass="RisePrimaryUIButton" customModule="Rise" customModuleProvider="target">
-                                <rect key="frame" x="16" y="234" width="343" height="50"/>
+                                <rect key="frame" x="16" y="177" width="343" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="Bq5-G8-YHf"/>
                                 </constraints>
@@ -39,7 +39,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EAq-hv-qZ4" customClass="RiseSecondaryUIButton" customModule="Rise" customModuleProvider="target">
-                                <rect key="frame" x="16" y="292" width="343" height="50"/>
+                                <rect key="frame" x="16" y="235" width="343" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="FNT-ad-oeZ"/>
                                 </constraints>
@@ -58,7 +58,7 @@
                             <constraint firstItem="vmn-Ip-TSw" firstAttribute="leading" secondItem="qW7-PC-B6q" secondAttribute="leading" constant="16" id="Lmw-2D-fYk"/>
                             <constraint firstItem="qW7-PC-B6q" firstAttribute="trailing" secondItem="vmn-Ip-TSw" secondAttribute="trailing" constant="16" id="Pj3-5f-8WS"/>
                             <constraint firstItem="qW7-PC-B6q" firstAttribute="trailing" secondItem="EIv-xa-aCL" secondAttribute="trailing" constant="16" id="q1i-f6-qfN"/>
-                            <constraint firstItem="EIv-xa-aCL" firstAttribute="top" secondItem="qW7-PC-B6q" secondAttribute="top" constant="73" id="tkB-jv-eMf"/>
+                            <constraint firstItem="EIv-xa-aCL" firstAttribute="top" secondItem="qW7-PC-B6q" secondAttribute="top" constant="16" id="tkB-jv-eMf"/>
                             <constraint firstItem="EIv-xa-aCL" firstAttribute="leading" secondItem="qW7-PC-B6q" secondAttribute="leading" constant="16" id="vMX-T6-Kcp"/>
                             <constraint firstItem="EAq-hv-qZ4" firstAttribute="top" secondItem="vmn-Ip-TSw" secondAttribute="bottom" constant="8" id="vYU-nu-t1l"/>
                         </constraints>

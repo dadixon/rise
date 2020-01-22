@@ -1,7 +1,4 @@
 PODS:
-  - ChameleonFramework/Default (2.1.0)
-  - ChameleonFramework/Swift (2.1.0):
-    - ChameleonFramework/Default
   - Eureka (4.1.1)
   - Firebase/Auth (5.3.0):
     - Firebase/CoreOnly
@@ -42,7 +39,6 @@ PODS:
   - SVProgressHUD (2.2.5)
 
 DEPENDENCIES:
-  - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
   - Eureka
   - Firebase/Auth
   - Firebase/Core
@@ -50,7 +46,7 @@ DEPENDENCIES:
   - SVProgressHUD
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Eureka
     - Firebase
     - FirebaseAnalytics
@@ -64,17 +60,7 @@ SPEC REPOS:
     - nanopb
     - SVProgressHUD
 
-EXTERNAL SOURCES:
-  ChameleonFramework:
-    :git: https://github.com/ViccAlexander/Chameleon.git
-
-CHECKOUT OPTIONS:
-  ChameleonFramework:
-    :commit: 6dd284bde21ea2e7f9fd89bc36f40df16e16369d
-    :git: https://github.com/ViccAlexander/Chameleon.git
-
 SPEC CHECKSUMS:
-  ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
   Eureka: b88fb930e42c79f8c03c373d0fcdc28c1d6c50ed
   Firebase: 68afeeb05461db02d7c9e3215cda28068670f4aa
   FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
@@ -88,6 +74,6 @@ SPEC CHECKSUMS:
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
 
-PODFILE CHECKSUM: 6c79dabae461ffab88a848429c33ff46d9aabf0e
+PODFILE CHECKSUM: 5af88cbc8ced72173fbf440abc9cbef7728a0351
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.8.4

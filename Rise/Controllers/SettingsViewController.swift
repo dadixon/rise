@@ -52,6 +52,37 @@ class SettingsViewController: FormViewController {
         }
         
         form
+            +++ Section()
+            <<< ButtonRow("Submit Your Winners") {
+                $0.title = $0.tag
+                $0.baseCell.backgroundColor = UIColor(red: 0/255, green: 171/255, blue: 232/255, alpha: 1)
+                $0.baseCell.tintColor = UIColor.white
+                $0.baseCell.textLabel?.font = UIFont.boldSystemFont(ofSize: 30.0)
+            }.onCellSelection({ (cell, row) in
+                var mainUrl = "https://myemployees.com/winners?"
+                
+                if UserDefaults.userFirstName != "" {
+                    mainUrl += "first=\(UserDefaults.userFirstName.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? "")&"
+                }
+                
+                if UserDefaults.userLastName != "" {
+                    mainUrl += "last=\(UserDefaults.userLastName.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? "")&"
+                }
+                
+                if UserDefaults.userEmail != "" {
+                    mainUrl += "email=\(UserDefaults.userEmail.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? "")&"
+                }
+                
+                if UserDefaults.userCompany != "" {
+                    mainUrl += "company=\(UserDefaults.userCompany.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? "")&"
+                }
+                
+                mainUrl.removeLast()
+                
+                if let url = URL(string: mainUrl) {
+                    UIApplication.shared.open(url)
+                }
+            })
             +++ Section("Reminders")
             <<< SwitchRow("timeManagedReminders"){
                 $0.title = "On/Off"
@@ -81,20 +112,7 @@ class SettingsViewController: FormViewController {
                     }
                 }
                 }
-//            <<< PushRow<String>() {
-//                $0.hidden = Condition.function(["timeManagedReminders"], { form in
-//                    return !((form.rowBy(tag: "timeManagedReminders") as? SwitchRow)?.value ?? false)
-//                })
-//                $0.title = "Repeats"
-//                $0.value = FormItems.repeatFreq
-//                $0.options = FormItems.repeatOptions
-//                $0.onChange { [unowned self] row in
-//                    self.userDefault.set(row.value, forKey: Defaults.RepeatFreq)
-//                }
-//                }
-//                .cellSetup({ (cell, row) in
-//                    self.userDefault.set(row.value, forKey: Defaults.RepeatFreq)
-//                })
+
             <<< StepperRow()
                 .cellSetup({ (cell, row) in
                     row.title = "Days before reminders"
@@ -118,22 +136,54 @@ class SettingsViewController: FormViewController {
             +++ Section("General")
             <<< StepperRow()
                 .cellSetup({ (cell, row) in
-                    row.title = "Keep notes for \(UserDefaults.storeDays) days"
+                    if UserDefaults.storeDays > 100 {
+                        row.title = "Keep Indefinitely"
+                    } else {
+                        row.title = "Keep notes for \(UserDefaults.storeDays) days"
+                    }
                     row.value = Double(UserDefaults.storeDays)
                     cell.valueLabel!.text = ""
                     cell.stepper.minimumValue = 40.0
-                    cell.stepper.maximumValue = 100.0
+                    cell.stepper.maximumValue = 101.0
                 }).cellUpdate({ (cell, row) in
                     if(row.value != nil)
                     {
                         cell.valueLabel!.text = ""
                     }
                 }).onChange({ (row) in
-                    UserDefaults.set(storeDays: Int(row.value!))
-                    if(row.value != nil)
-                    {
-                        row.cell.valueLabel!.text = ""
-                        row.title = "Keep notes for \(UserDefaults.storeDays) days"
+                    let maxValue = 100
+                    let storeDays = UserDefaults.storeDays
+                    let newValue = Int(row.value!)
+                    
+                    if storeDays >= maxValue && newValue == maxValue {
+                        let alert = UIAlertController(title: "Delete Notes?", message: "All notes over 100 days old will be deleted. Do you want to proceed?", preferredStyle: .alert)
+                        
+                        alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action) in
+                            UserDefaults.set(storeDays: Int(row.value!))
+                            row.value = 100.0
+                            row.cell.stepper.value = 100.0
+                            row.title = "Keep notes for \(UserDefaults.storeDays) days"
+                            row.reload()
+                        }))
+                        
+                        alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: { (action) in
+                            UserDefaults.set(storeDays: storeDays)
+                            row.value = 101.0
+                            row.cell.stepper.value = 101.0
+                        }))
+                        
+                        self.present(alert, animated: true)
+                    } else {
+                        UserDefaults.set(storeDays: Int(row.value!))
+                        if row.value != nil {
+                            row.cell.valueLabel!.text = ""
+                            
+                            if UserDefaults.storeDays > 100 {
+                                row.title = "Keep Indefinitely"
+                            } else {
+                                row.title = "Keep notes for \(UserDefaults.storeDays) days"
+                            }
+                        }
                     }
                 })
             <<< SwitchRow(){
@@ -217,6 +267,12 @@ class SettingsViewController: FormViewController {
                             // Delete account
                             let user = Auth.auth().currentUser
                             
+                            do {
+                                try Auth.auth().signOut()
+                            } catch let signOutError as NSError {
+                                print ("Error signing out: %@", signOutError)
+                            }
+                            
                             user?.delete { error in
                                 if let error = error {
                                     if let errCode = AuthErrorCode(rawValue: error._code) {
@@ -252,18 +308,6 @@ class SettingsViewController: FormViewController {
                         print ("Error signing out: %@", signOutError)
                     }
                 })
-//            +++ Section("Pre-fill")
-//            <<< ButtonRow { row in
-//                row.title = "Print Values"
-//                }.onCellSelection({ [unowned self] (cell, row) in
-//                    print(self.form.values())
-//                    print(UserDefaults.useTimeManagedReminder)
-//                    print(UserDefaults.timeManagedReminder)
-////                    print(FormData.repeatFreq)
-//                    print(UserDefaults.reminderStartDays)
-//                    print(UserDefaults.storeDays)
-//                    print(UserDefaults.sortOrder)
-//                })
     }
     
     private func setup() {
@@ -286,11 +330,11 @@ class SettingsViewController: FormViewController {
     private func createNotification(date: Date) {
         let content = UNMutableNotificationContent()
         var message = ""
-        
+
         if getNotificationTextCount() == 0 {
             message = "Keep up the great work!"
-        } else {
-            message = "\(getNotificationTextCount()) people need recognition today!"
+        } else if getNotificationTextCount() == 1 {
+            message = "You have people who need recognition"
         }
         
         //adding title, subtitle, body and badge
@@ -335,23 +379,23 @@ class SettingsViewController: FormViewController {
         var calendar = Calendar.current
         
         calendar.timeZone = NSTimeZone.local
-        
+
         let dateFrom = calendar.startOfDay(for: Date())
-        let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.reminderStartDays, to: dateFrom)
-        let noNotePredicate = NSPredicate(format: "latest == nil")
-        let storeDaysPredicate = NSPredicate(format: "latest <= %@", dateTo! as NSDate)
+        let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.reminderStartDays - 1, to: dateFrom)
+        let noNotePredicate = NSPredicate(format: "latest == nil AND userId == %@", UserDefaults.userUID)
+        let storeDaysPredicate = NSPredicate(format: "latest <= %@ AND userId == %@", dateTo! as NSDate, UserDefaults.userUID)
         let datePredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
         let request: NSFetchRequest<Employee> = Employee.fetchRequest()
-        
+
         request.predicate = datePredicate
-        
+
         do {
             rv = try context.fetch(request)
             return rv.count
         } catch {
             print("Error fetching data from context \(error)")
         }
-        
+
         return 0
     }
     
@@ -359,21 +403,21 @@ class SettingsViewController: FormViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
+    
     func sendEmail() {
         if MFMailComposeViewController.canSendMail() {
-            let user = Auth.auth().currentUser
             let body = """
             <p>Name: \(UserDefaults.userFirstName) \(UserDefaults.userLastName)<br>
                 Company: \(UserDefaults.userCompany)<br>
                 Phone: \(UserDefaults.userPhone)<br>
-                Email: \(String(describing: user!.email))</p>
+                Email: \(UserDefaults.userEmail)</p>
 
                 <p>Message: </p>
             """
             let mail = MFMailComposeViewController()
             mail.mailComposeDelegate = self
             mail.setToRecipients(["info@myemployees.com"])
-            mail.setSubject("Rise App Message")
+            mail.setSubject("Rise App Message - \(UserDefaults.userEmail)")
             mail.setMessageBody(body, isHTML: true)
             
             present(mail, animated: true)
@@ -390,7 +434,9 @@ class SettingsViewController: FormViewController {
     private func deleteEmployees() {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         
+        let userPredicate = NSPredicate(format: "userId == %@", UserDefaults.userUID)
         let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Employee")
+        fetch.predicate = userPredicate
         let request = NSBatchDeleteRequest(fetchRequest: fetch)
         
         do {
@@ -401,12 +447,12 @@ class SettingsViewController: FormViewController {
     }
     
     private func deleteFromDatabase() {
-        let ref = Database.database().reference()
+        let onlineRef = Database.database().reference(withPath: "clients/\(UserDefaults.userUID)")
         
-        ref.child("clients").child(UserDefaults.userUID)
-        
-        ref.removeValue()
+        onlineRef.removeValue()
     }
+    
+    @IBAction func unwindToSettings(segue:UIStoryboardSegue) { }
 }
 
 extension SettingsViewController: MFMailComposeViewControllerDelegate {

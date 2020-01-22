@@ -36,44 +36,91 @@ class GeneralViewController: FormViewController {
             <<< TextRow(){
                 $0.title = "First Name"
                 $0.value = UserDefaults.userFirstName
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.onChange({ (row) in
-                    self.firstName = row.value!
+                    if (row.value != nil) {
+                        self.firstName = row.value!
+                    }
                 })
-            
+                .cellUpdate { cell, row in
+                    if !row.isValid {
+                        cell.titleLabel?.textColor = .red
+                        self.firstName = ""
+                    }
+                }
             <<< TextRow(){
                 $0.title = "Last Name"
                 $0.value = UserDefaults.userLastName
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.onChange({ (row) in
-                    self.lastName = row.value!
+                    if (row.value != nil) {
+                        self.lastName = row.value!
+                    }
                 })
-            
+                .cellUpdate { cell, row in
+                    if !row.isValid {
+                        cell.titleLabel?.textColor = .red
+                        self.lastName = ""
+                    }
+                }
             <<< PhoneRow(){
                 $0.title = "Phone"
                 $0.value = UserDefaults.userPhone
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.onChange({ (row) in
-                    self.phone = row.value!
+                    if (row.value != nil) {
+                        self.phone = row.value!
+                    }
                 })
-            
+                .cellUpdate { cell, row in
+                    if !row.isValid {
+                        cell.titleLabel?.textColor = .red
+                        self.phone = ""
+                    }
+                }
             <<< TextRow(){
                 $0.title = "Company"
                 $0.value = UserDefaults.userCompany
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.onChange({ (row) in
-                    self.company = row.value!
+                    if (row.value != nil) {
+                        self.company = row.value!
+                    }
                 })
-            
+                .cellUpdate { cell, row in
+                    if !row.isValid {
+                        cell.titleLabel?.textColor = .red
+                        self.company = ""
+                    }
+                }
             <<< PushRow<String>(){
-                $0.title = "\(UserDefaults.mainTitle)s"
-                $0.options = ["Less than 25", "25-50", "51-75", "76-100"]
+                $0.title = "Employees"
+                $0.options = ["Less than 25", "25-50", "51-75", "76-100", "100+"]
                 $0.value = UserDefaults.userAmount
+                $0.add(rule: RuleRequired())
+                $0.validationOptions = .validatesOnChange
                 }.onChange({ (row) in
-                    self.amountOfPeople = row.value!
+                    if (row.value != nil) {
+                        self.amountOfPeople = row.value!
+                    }
                 })
+                .cellUpdate { cell, row in
+                    if !row.isValid {
+                        cell.textLabel?.textColor = .red
+                        self.amountOfPeople = ""
+                    }
+                }
             +++ Section()
             <<< ButtonRow() {
                 $0.title = "Submit"
                 }
                 .onCellSelection ({ [unowned self] (cell, row) in
                     self.saveGeneralData()
+                    self.performSegue(withIdentifier: "unwindToSettings", sender: self)
                 })
     }
     
@@ -93,6 +140,7 @@ class GeneralViewController: FormViewController {
             self.email = value?["Email"] as? String ?? ""
             self.createdDate = (value?["Date"] as? NSNumber)!
             self.newUser = (value?["New"] as? Bool)!
+            self.amountOfPeople = value?["Number_of_People"] as? String ?? ""
 
         }) { (error) in
             print(error.localizedDescription)
@@ -102,23 +150,45 @@ class GeneralViewController: FormViewController {
     private func saveGeneralData() {
         ref = Database.database().reference()
         
-        UserDefaults.set(userFirstName: self.firstName)
-        UserDefaults.set(userLastName: self.lastName)
-        UserDefaults.set(userPhone: self.phone)
-        UserDefaults.set(userCompany: self.company)
-        UserDefaults.set(userAmount: self.amountOfPeople)
+        guard self.firstName != "" else {
+            SVProgressHUD.showError(withStatus: "Please enter a first name")
+            return
+        }
         
-        let userId = Auth.auth().currentUser?.uid
+        guard self.lastName != "" else {
+            SVProgressHUD.showError(withStatus: "Please enter a last name")
+            return
+        }
+        
+        guard self.phone != "" else {
+            SVProgressHUD.showError(withStatus: "Please enter a phone number")
+            return
+        }
+        
+        guard self.company != "" else {
+            SVProgressHUD.showError(withStatus: "Please enter a company name")
+            return
+        }
+        
+        guard self.amountOfPeople != "" else {
+            SVProgressHUD.showError(withStatus: "Please select an amount")
+            return
+        }
+        
+        UserDefaults.set(userFirstName: firstName)
+        UserDefaults.set(userLastName: lastName)
+        UserDefaults.set(userPhone: phone)
+        UserDefaults.set(userCompany: company)
+        UserDefaults.set(userAmount: amountOfPeople)
         
         let post: [String : Any] = [
-            "UserId": userId as Any,
             "Date": self.createdDate,
-            "First_Name": UserDefaults.userFirstName,
-            "Last_Name": UserDefaults.userLastName,
+            "First_Name": firstName,
+            "Last_Name": lastName,
             "Email": self.email,
-            "Phone": UserDefaults.userPhone,
-            "Company": UserDefaults.userCompany,
-            "Number_of_People": UserDefaults.userAmount,
+            "Phone": phone,
+            "Company": company,
+            "Number_of_People": amountOfPeople,
             "New": self.newUser
             ]
         let childUpdates = ["/clients/\(UserDefaults.userUID)": post]

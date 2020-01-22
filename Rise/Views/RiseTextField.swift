@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import ChameleonFramework
 
 class RiseTextField: UITextField {
 
@@ -19,8 +18,8 @@ class RiseTextField: UITextField {
         
         delegate = self
         
-        focusColor = HexColor("99FBDA")!
-        blurColor = HexColor("6F6F6F")!
+        focusColor = Design.Color.Primary.aquamarine
+        blurColor = Design.Color.Secondary.darkGrey
         
         self.layer.borderColor = blurColor.cgColor
         self.layer.borderWidth = 1.5

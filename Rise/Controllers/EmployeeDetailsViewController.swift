@@ -95,11 +95,22 @@ class EmployeeDetailsViewController: UIViewController {
             dayText = "days"
         }
         
-        return "\(notes.count) " + noteText + " in the past \(days) " + dayText
+        if days > 100 {
+            return "\(notes.count) " + noteText
+        } else {
+            return "\(notes.count) " + noteText + " in the past \(days) " + dayText
+        }
     }
     
     func deleteNote(note: Note) {
         employee.removeFromNotes(note)
+        
+        let notes = sortedNotes()
+        
+        if notes.count > 0 {
+            employee.latest = notes[0].created
+        }
+        
         context.delete(note)
         
         do {
@@ -109,69 +120,24 @@ class EmployeeDetailsViewController: UIViewController {
         }
     }
     
-    func updateLatestNote() {
-        if let notes = employee.notes {
-            if notes.count > 1 {
-                let notesArray = notes.array as! [Note]
-                let notesTemp = notesArray.sorted(by: {$0.created!.compare($1.created!) == .orderedDescending})
-                
-                if notes.count > 0 {
-                    guard let diffInDays = Calendar.current.dateComponents([.day], from: notesTemp[0].created!, to: Date()).day else {
-                        SVProgressHUD.showError(withStatus: "Unable to process")
-                        return
-                    }
-                    
-                    if diffInDays > UserDefaults.storeDays {
-                        employee.latest = nil
-                    } else {
-                        employee.latest = notesTemp[0].created
-                    }
-                }
-            } else {
-                employee.latest = nil
-            }
-        } else {
-            employee.latest = nil
-        }
-        
-        do {
-            try context.save()
-        } catch {
-            SVProgressHUD.showSuccess(withStatus: "Note has been deleted")
-        }
-    }
-    
-    private func updateEmployee(employee: Employee) throws {
-        guard let fullName = nameTextField.text, !fullName.isEmpty else {
-            throw ErrorsToThrow.fullNameNotFound
-        }
-        
-        employee.setValue(fullName, forKey: "fullName")
-        
-        do {
-            try context.save()
-            SVProgressHUD.showSuccess(withStatus: "Employee Updated")
-        } catch {
-            print("Error saving context \(error)")
-            throw ErrorsToThrow.canNotSave
-        }
-    }
-    
     @objc func confirmUpdateEmployee() {
+        guard let fullName = nameTextField.text, !fullName.isEmpty else {
+            SVProgressHUD.showSuccess(withStatus: "Please input a name")
+            return
+        }
+        
         nameTextField.isHidden = true
         nameLabel.isHidden = false
         nameLabel.text = nameTextField.text
         
-        do {
-            try updateEmployee(employee: employee)
-            self.view.removeGestureRecognizer(tap!)
-        } catch ErrorsToThrow.fullNameNotFound {
-            SVProgressHUD.showError(withStatus: "Please input a name")
-        } catch ErrorsToThrow.canNotSave {
-            SVProgressHUD.showError(withStatus: "Could not save")
-        } catch {
-            
-        }
+        CoreDataManager.shared.updateEmployee(name: fullName, employee: employee, completion: { (error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "Could not save")
+            } else {
+                SVProgressHUD.showSuccess(withStatus: "Employee Updated")
+            }
+        })
+        self.view.removeGestureRecognizer(tap!)
     }
     
     @objc func addNoteClicked() {
@@ -188,8 +154,6 @@ class EmployeeDetailsViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // navigationItem.title = nil
-        
         if segue.identifier == "showAddNote" {
             let vc = segue.destination as! AddNoteViewController
                 
@@ -199,50 +163,54 @@ class EmployeeDetailsViewController: UIViewController {
         }
     }
     
-    @IBAction func unwindToEmployeesDetails(segue:UIStoryboardSegue) { }
+    @IBAction func unwindToEmployeesDetails(segue:UIStoryboardSegue) {
+        
+    }
 }
 
 extension EmployeeDetailsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         deleteEmployeeIndexPath = indexPath
-        
+
         let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "Delete", handler: { (action, view, completionHandler) in
-            
+
             let alert = UIAlertController(title: "Delete Note?", message: "Delete Note", preferredStyle: .alert)
-            
+
             alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: {(_) in
                 if let indexPath = self.deleteEmployeeIndexPath {
                     tableView.beginUpdates()
-                    
+
                     self.deleteNote(note: self.notes[indexPath.row])
-                    self.updateLatestNote()
                     self.notes.remove(at: indexPath.row)
                     self.employeeDetailsLabel.text = self.setNoteDetails(count: self.notes.count, days: UserDefaults.storeDays)
-                    self.updateLatestNote()
-                    
+
                     tableView.deleteRows(at: [indexPath], with: .automatic)
                     self.deleteEmployeeIndexPath = nil
                     tableView.endUpdates()
                 }
                 completionHandler(true)
             }))
-            
+
             alert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
-            
+
             self.present(alert, animated: true)
         })
-        
+
         deleteAction.backgroundColor = UIColor.red
-        
+
         let config = UISwipeActionsConfiguration(actions: [deleteAction])
-        
+
         config.performsFirstActionWithFullSwipe = false
         return config
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        return UISwipeActionsConfiguration.init()
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedNote = notes[indexPath.row]
-        
+
         performSegue(withIdentifier: "showAddNote", sender: nil)
     }
 }
@@ -268,10 +236,6 @@ extension EmployeeDetailsViewController: UITableViewDataSource {
 extension EmployeeDetailsViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-//        nameTextField.isHidden = true
-//        nameLabel.isHidden = false
-//        nameLabel.text = nameTextField.text
-//        updateEmployee(employee: employee)
         confirmUpdateEmployee()
         return true
     }

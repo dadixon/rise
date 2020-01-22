@@ -9,7 +9,6 @@
 import UIKit
 import CoreData
 import SVProgressHUD
-import ChameleonFramework
 import Firebase
 
 class EmployeesTableViewController: UITableViewController {
@@ -19,8 +18,9 @@ class EmployeesTableViewController: UITableViewController {
     
     let userDefaults = UserDefaults.standard
     
-    var employees = [Employee]()
+    var employees: [Employee]?
     var filteredEmployees = [Employee]()
+    var tableData = [Employee]()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let searchController = UISearchController(searchResultsController: nil)
     var deleteEmployeeIndexPath: IndexPath? = nil
@@ -46,13 +46,32 @@ class EmployeesTableViewController: UITableViewController {
                 return
             }
             
+            guard !UserDefaults.userUID.isEmpty else {
+                self.performSegue(withIdentifier: "viewLogin", sender: nil)
+                return
+            }
+            
             self.user = user
-            
-            self.title = UserDefaults.mainTitle
-            
-            self.employees = self.getEmployees()
-            self.tableView.reloadData()
         })
+        
+        self.title = UserDefaults.mainTitle
+        
+        employees = CoreDataManager.shared.getEmployees(completion: { (error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "Error fetching Employees")
+            }
+        }) //self.getEmployees()
+        
+        if let employees = employees {
+            tableData = employees
+            tableView.reloadData()
+            
+            if employees.count == 0 {
+                tableView.backgroundView = BackgroundView()
+            } else {
+                tableView.backgroundView = nil
+            }
+        }
     }
     
     private func setup() {
@@ -72,19 +91,27 @@ class EmployeesTableViewController: UITableViewController {
     
     func getEmployees() -> [Employee] {
         var rv = [Employee]()
-        var calendar = Calendar.current
+        let noNotePredicate = NSPredicate(format: "latest == nil AND userId == %@", UserDefaults.userUID)
+        var mainPredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate])
         
-        calendar.timeZone = NSTimeZone.local
+        if UserDefaults.storeDays < 101 {
+            var calendar = Calendar.current
+            calendar.timeZone = NSTimeZone.local
+            let dateFrom = calendar.startOfDay(for: Date())
+            let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
+            let storeDaysPredicate = NSPredicate(format: "latest >= %@ AND userId == %@", dateTo! as NSDate, UserDefaults.userUID)
+            
+            mainPredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
+        } else {
+            let allUserEmployeesPredicate = NSPredicate(format: "userId == %@", UserDefaults.userUID)
+            
+            mainPredicate = NSCompoundPredicate(type: .or, subpredicates: [allUserEmployeesPredicate])
+        }
         
-        let dateFrom = calendar.startOfDay(for: Date())
-        let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
-        let noNotePredicate = NSPredicate(format: "latest == nil")
-        let storeDaysPredicate = NSPredicate(format: "latest >= %@", dateTo! as NSDate)
-        let datePredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
         let sortDescriptor = NSSortDescriptor(key: "latest", ascending: UserDefaults.sortOrder)
         let request: NSFetchRequest<Employee> = Employee.fetchRequest()
         
-        request.predicate = datePredicate
+        request.predicate = mainPredicate
         request.sortDescriptors = [sortDescriptor]
         
         do {
@@ -115,7 +142,7 @@ class EmployeesTableViewController: UITableViewController {
     }
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        filteredEmployees = employees.filter({( employee : Employee) -> Bool in
+        filteredEmployees = tableData.filter({( employee : Employee) -> Bool in
             return (employee.fullName?.lowercased().contains(searchText.lowercased()))!
         })
         
@@ -125,24 +152,6 @@ class EmployeesTableViewController: UITableViewController {
     func isFiltering() -> Bool {
         return searchController.isActive && !searchBarIsEmpty()
     }
-    
-//    private func deleteEmployeeHandler(alertAction: UIAlertAction!) -> Void {
-//        if let indexPath = deleteEmployeeIndexPath {
-//            tableView.beginUpdates()
-//
-//            if isFiltering() {
-//                deleteEmployee(employee: filteredEmployees[indexPath.row])
-//                filteredEmployees.remove(at: indexPath.row)
-//            } else {
-//                deleteEmployee(employee: employees[indexPath.row])
-//                employees.remove(at: indexPath.row)
-//            }
-//
-//            tableView.deleteRows(at: [indexPath], with: .automatic)
-//            deleteEmployeeIndexPath = nil
-//            tableView.endUpdates()
-//        }
-//    }
     
     func deleteEmployee(employee: Employee) {
         context.delete(employee)
@@ -154,7 +163,16 @@ class EmployeesTableViewController: UITableViewController {
         }
     }
     
-    @IBAction func unwindToEmployeesDashboard(segue:UIStoryboardSegue) { }
+    @IBAction func unwindToEmployeesDashboard(segue:UIStoryboardSegue) {
+        employees = getEmployees()
+        tableView.reloadData()
+        
+        if tableData.count == 0 {
+            tableView.backgroundView = BackgroundView()
+        } else {
+            tableView.backgroundView = nil
+        }
+    }
     
     // MARK: - Table view data source
 
@@ -167,7 +185,7 @@ class EmployeesTableViewController: UITableViewController {
             return filteredEmployees.count
         }
         
-        return employees.count
+        return tableData.count
     }
 
     
@@ -178,7 +196,7 @@ class EmployeesTableViewController: UITableViewController {
         if isFiltering() {
             employee = filteredEmployees[indexPath.row]
         } else {
-            employee = employees[indexPath.row]
+            employee = tableData[indexPath.row]
         }
         
         cell.nameLabel.text = employee.fullName!
@@ -209,16 +227,21 @@ class EmployeesTableViewController: UITableViewController {
                 if let indexPath = self.deleteEmployeeIndexPath {
                     tableView.beginUpdates()
                     
-                        if self.isFiltering() {
-                            self.deleteEmployee(employee: self.filteredEmployees[indexPath.row])
-                            self.filteredEmployees.remove(at: indexPath.row)
+                    if self.isFiltering() {
+                        self.deleteEmployee(employee: self.filteredEmployees[indexPath.row])
+                        self.filteredEmployees.remove(at: indexPath.row)
                     } else {
-                            self.deleteEmployee(employee: self.employees[indexPath.row])
-                            self.employees.remove(at: indexPath.row)
+                        self.deleteEmployee(employee: self.tableData[indexPath.row])
+                        self.tableData.remove(at: indexPath.row)
                     }
                     
                     tableView.deleteRows(at: [indexPath], with: .automatic)
-                        self.deleteEmployeeIndexPath = nil
+                    self.deleteEmployeeIndexPath = nil
+                    if self.tableData.count == 0 {
+                        self.tableView.backgroundView = BackgroundView()
+                    } else {
+                        self.tableView.backgroundView = nil
+                    }
                     tableView.endUpdates()
                 }
                 completionHandler(true)
@@ -247,7 +270,7 @@ class EmployeesTableViewController: UITableViewController {
             completionHandler(true)
         })
         
-        viewAction.backgroundColor = HexColor("6F6F6F")
+        viewAction.backgroundColor = Design.Color.Secondary.darkGrey
         
         let config = UISwipeActionsConfiguration(actions: [viewAction])
         
@@ -283,9 +306,7 @@ class EmployeesTableViewController: UITableViewController {
     
     // MARK: - Navigation
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-       // navigationItem.title = nil
-        
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {        
         if segue.identifier == "showEmployee" {
             if let indexPath = selectedEmployeeIndexPath {
                 let vc = segue.destination as! EmployeeDetailsViewController
@@ -294,7 +315,7 @@ class EmployeesTableViewController: UITableViewController {
                 if isFiltering() {
                     employee = filteredEmployees[indexPath.row]
                 } else {
-                    employee = employees[indexPath.row]
+                    employee = tableData[indexPath.row]
                 }
                 
                 vc.employee = employee
@@ -307,7 +328,7 @@ class EmployeesTableViewController: UITableViewController {
                 if isFiltering() {
                     employee = filteredEmployees[indexPath.row]
                 } else {
-                    employee = employees[indexPath.row]
+                    employee = tableData[indexPath.row]
                 }
                 
                 vc.employee = employee

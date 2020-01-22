@@ -1,5 +1,5 @@
 //
-//  User.swift
+//  RiseUser.swift
 //  Rise
 //
 //  Created by Domonique Dixon on 11/29/18.
@@ -23,13 +23,13 @@ class RiseUser {
     var isNew: Bool
     
     private init() {
-        self.id = ""
-        self.firstName = ""
-        self.lastName = ""
-        self.email = ""
-        self.phone = ""
-        self.companyName = ""
-        self.amountOfPeople = ""
+        self.id = UserDefaults.userUID
+        self.firstName = UserDefaults.userFirstName
+        self.lastName = UserDefaults.userLastName
+        self.email = UserDefaults.userEmail
+        self.phone = UserDefaults.userPhone
+        self.companyName = UserDefaults.userCompany
+        self.amountOfPeople = UserDefaults.userAmount
         self.createdDate = 0
         self.isNew = true
     }

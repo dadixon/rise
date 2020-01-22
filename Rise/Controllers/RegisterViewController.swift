@@ -63,8 +63,18 @@ class RegisterViewController: UIViewController {
     private func saveUserData(user: Firebase.User) {
         ref = Database.database().reference()
         
+        let userDefaults = UserDefaults.standard
+        
+        UserDefaults.set(userUID: user.uid)
+        UserDefaults.set(userFirstName: userDefaults.string(forKey: "tempFirstName") ?? "")
+        UserDefaults.set(userLastName: userDefaults.string(forKey: "tempLastName") ?? "")
+        UserDefaults.set(userPhone: userDefaults.string(forKey: "tempPhone") ?? "")
+        UserDefaults.set(userCompany: userDefaults.string(forKey: "tempCompany") ?? "")
+        UserDefaults.set(userEmail: user.email!)
+        UserDefaults.set(userAmount: userDefaults.string(forKey: "tempAmountOfPeople") ?? "")
+        UserDefaults.set(userIsNew: true)
+        
         let objectToSave: [String : Any] = [
-            "UserId": user.uid,
             "Date": [".sv": "timestamp"],
             "First_Name": UserDefaults.userFirstName,
             "Last_Name": UserDefaults.userLastName,
@@ -75,12 +85,7 @@ class RegisterViewController: UIViewController {
             "New": true
         ]
         
-        
-        let uid = self.ref.child("clients").childByAutoId()
-        
-        UserDefaults.set(userUID: uid.key)
-        
-        uid.setValue(objectToSave) { (error, ref) -> Void in
+        self.ref.child("clients").child(user.uid).setValue(objectToSave) { (error, ref) -> Void in
             if error != nil {
                 SVProgressHUD.showError(withStatus: error?.localizedDescription)
             }

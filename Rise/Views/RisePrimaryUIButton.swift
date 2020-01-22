@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import ChameleonFramework
 
 class RisePrimaryUIButton: UIButton {
 
@@ -31,30 +30,7 @@ class RisePrimaryUIButton: UIButton {
         
         self.setTitleColor(UIColor.black, for: .normal)
     }
-    
-    // MARK: Public interface
-    
-//    @IBInspectable public var cornerRadius: CGFloat = 8 {
-//        didSet {
-//            self.setNeedsLayout()
-//        }
-//    }
-//
-//    @IBInspectable public var bgColor: UIColor = UIColor.white {
-//        didSet {
-//            self.setNeedsLayout()
-//        }
-//    }
-//
-//    @IBInspectable var borderColor: UIColor? {
-//        get {
-//            return UIColor(cgColor: self.layer.borderColor!)
-//        }
-//        set {
-//            self.layer.borderColor = newValue?.cgColor
-//        }
-//    }
-    
+        
     // MARK: Overrides
     
     override public func layoutSubviews() {
@@ -78,8 +54,8 @@ class RisePrimaryUIButton: UIButton {
         }
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = UIBezierPath(roundedRect: self.bounds, cornerRadius: 26).cgPath
-        shapeLayer.fillColor = HexColor("99FBDA")!.cgColor
-        shapeLayer.strokeColor = HexColor("6F6F6F")!.cgColor
+        shapeLayer.fillColor = Design.Color.Primary.aquamarine.cgColor
+        shapeLayer.strokeColor = Design.Color.Secondary.darkGrey.cgColor
         
         self.layer.insertSublayer(shapeLayer, at: 0)
         self.roundRectLayer = shapeLayer

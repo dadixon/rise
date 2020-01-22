@@ -59,7 +59,6 @@
                             <constraint firstItem="GhV-xR-nQW" firstAttribute="centerX" secondItem="azL-KN-RcK" secondAttribute="centerX" id="1ts-jh-ONM"/>
                             <constraint firstItem="IsR-BB-w6o" firstAttribute="top" secondItem="cuD-82-mhf" secondAttribute="top" constant="8" id="3O8-a4-UXN"/>
                             <constraint firstItem="cuD-82-mhf" firstAttribute="trailing" secondItem="IsR-BB-w6o" secondAttribute="trailing" constant="16" id="BXh-sz-A0u"/>
-                            <constraint firstItem="cuI-Yc-Y2y" firstAttribute="top" secondItem="cuD-82-mhf" secondAttribute="top" constant="37" id="PkP-Cm-fjo"/>
                             <constraint firstItem="cuI-Yc-Y2y" firstAttribute="top" secondItem="IsR-BB-w6o" secondAttribute="bottom" constant="8" id="VPa-sf-mJv"/>
                             <constraint firstItem="Fy7-KS-PQB" firstAttribute="centerX" secondItem="azL-KN-RcK" secondAttribute="centerX" id="X7w-DZ-jfR"/>
                             <constraint firstItem="Fy7-KS-PQB" firstAttribute="top" secondItem="cuI-Yc-Y2y" secondAttribute="bottom" constant="28" id="YTC-NI-QpQ"/>
@@ -76,10 +75,12 @@
                         <viewLayoutGuide key="safeArea" id="cuD-82-mhf"/>
                     </view>
                     <connections>
+                        <outlet property="bottomConstraintDate" destination="lSS-XB-rSd" id="54R-rT-kkH"/>
                         <outlet property="createdDate" destination="Fy7-KS-PQB" id="5fM-SE-bkS"/>
                         <outlet property="noteTextArea" destination="cuI-Yc-Y2y" id="3zf-9u-GJ1"/>
                         <outlet property="saveBtn" destination="GhV-xR-nQW" id="UpB-Up-X3f"/>
                         <outlet property="titleLabel" destination="IsR-BB-w6o" id="gch-ki-5Fx"/>
+                        <outlet property="topConstraintDate" destination="YTC-NI-QpQ" id="3v7-V7-Ygl"/>
                         <segue destination="aMQ-pD-Gcc" kind="unwind" identifier="unwindToEmployeeDetails" unwindAction="unwindToEmployeesDetailsWithSegue:" id="aeF-vr-8QR"/>
                         <segue destination="aMQ-pD-Gcc" kind="unwind" identifier="unwindToEmployeeDashboard" unwindAction="unwindToEmployeesDashboardWithSegue:" id="r4k-17-lcU"/>
                     </connections>
