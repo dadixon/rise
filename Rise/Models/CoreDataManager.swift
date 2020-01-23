@@ -79,22 +79,43 @@ class CoreDataManager {
         }
     }
     
-    func getEmployees(completion: @escaping (_ error: Error?) -> Void) -> [Employee]? {
+    func getEmployees(predicates: NSCompoundPredicate?, sortedBy: [NSSortDescriptor]?, completion: @escaping (_ error: Error?) -> Void) -> [Employee]? {
         var employees: [Employee]?
         let context = CoreDataManager.shared.persistentContainer.viewContext
         let request: NSFetchRequest<Employee> = Employee.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "latest", ascending: UserDefaults.sortOrder)
         
-        request.sortDescriptors = [sortDescriptor]
+        if let predicate = predicates {
+            request.predicate = predicate
+        }
         
+        if let sort = sortedBy {
+            request.sortDescriptors = sort
+        }
+                
         do {
             employees = try context.fetch(request)
             completion(nil)
-            return employees
+            return sortNoDateFirst(employees: employees)
         } catch {
             completion(error)
         }
         
         return nil
+    }
+    
+    private func sortNoDateFirst(employees: [Employee]?) -> [Employee]? {
+        guard var temp = employees else {
+            return nil
+        }
+        
+        temp = temp.filter { $0.latest != nil }
+        
+        for employee in employees! {
+            if employee.latest == nil {
+                temp.insert(employee, at: 0)
+            }
+        }
+        
+        return temp
     }
 }

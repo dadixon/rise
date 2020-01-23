@@ -26,7 +26,7 @@ class EmployeesTableViewController: UITableViewController {
     var deleteEmployeeIndexPath: IndexPath? = nil
     var selectedEmployeeIndexPath: IndexPath? = nil
     var user: User!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -35,6 +35,17 @@ class EmployeesTableViewController: UITableViewController {
 
         setup()
         setupNavigation()
+        
+        if let employees = setEmployees() {
+            tableData = employees
+            tableView.reloadData()
+            
+            if tableData.count == 0 {
+                tableView.backgroundView = BackgroundView()
+            } else {
+                tableView.backgroundView = nil
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -53,25 +64,6 @@ class EmployeesTableViewController: UITableViewController {
             
             self.user = user
         })
-        
-        self.title = UserDefaults.mainTitle
-        
-        employees = CoreDataManager.shared.getEmployees(completion: { (error) in
-            if error != nil {
-                SVProgressHUD.showError(withStatus: "Error fetching Employees")
-            }
-        }) //self.getEmployees()
-        
-        if let employees = employees {
-            tableData = employees
-            tableView.reloadData()
-            
-            if employees.count == 0 {
-                tableView.backgroundView = BackgroundView()
-            } else {
-                tableView.backgroundView = nil
-            }
-        }
     }
     
     private func setup() {
@@ -80,6 +72,8 @@ class EmployeesTableViewController: UITableViewController {
     }
     
     private func setupNavigation() {
+        self.title = UserDefaults.mainTitle
+        
         settingsBtn.title = "Settings"
         
         searchController.searchResultsUpdater = self
@@ -89,8 +83,7 @@ class EmployeesTableViewController: UITableViewController {
         definesPresentationContext = true
     }
     
-    func getEmployees() -> [Employee] {
-        var rv = [Employee]()
+    private func setEmployees() -> [Employee]? {
         let noNotePredicate = NSPredicate(format: "latest == nil AND userId == %@", UserDefaults.userUID)
         var mainPredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate])
         
@@ -109,32 +102,12 @@ class EmployeesTableViewController: UITableViewController {
         }
         
         let sortDescriptor = NSSortDescriptor(key: "latest", ascending: UserDefaults.sortOrder)
-        let request: NSFetchRequest<Employee> = Employee.fetchRequest()
         
-        request.predicate = mainPredicate
-        request.sortDescriptors = [sortDescriptor]
-        
-        do {
-            rv = try context.fetch(request)
-        } catch {
-            print("Error fetching data from context \(error)")
-        }
-        
-        return sortNoDateFirst(employees: rv)
-    }
-    
-    func sortNoDateFirst(employees: [Employee]) -> [Employee] {
-        var temp = employees
-        
-        temp = temp.filter { $0.latest != nil }
-        
-        for employee in employees {
-            if employee.latest == nil {
-                temp.insert(employee, at: 0)
+        return CoreDataManager.shared.getEmployees(predicates: mainPredicate, sortedBy: [sortDescriptor], completion: { (error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "Error fetching Employees")
             }
-        }
-        
-        return temp
+        })
     }
     
     func searchBarIsEmpty() -> Bool {
@@ -153,24 +126,26 @@ class EmployeesTableViewController: UITableViewController {
         return searchController.isActive && !searchBarIsEmpty()
     }
     
-    func deleteEmployee(employee: Employee) {
-        context.delete(employee)
-        
-        do {
-            try context.save()
-        } catch {
-            SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
-        }
-    }
+//    func deleteEmployee(employee: Employee) {
+//        context.delete(employee)
+//
+//        do {
+//            try context.save()
+//        } catch {
+//            SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
+//        }
+//    }
     
     @IBAction func unwindToEmployeesDashboard(segue:UIStoryboardSegue) {
-        employees = getEmployees()
-        tableView.reloadData()
-        
-        if tableData.count == 0 {
-            tableView.backgroundView = BackgroundView()
-        } else {
-            tableView.backgroundView = nil
+        if let employees = setEmployees() {
+            tableData = employees
+            tableView.reloadData()
+            
+            if tableData.count == 0 {
+                tableView.backgroundView = BackgroundView()
+            } else {
+                tableView.backgroundView = nil
+            }
         }
     }
     
@@ -228,11 +203,23 @@ class EmployeesTableViewController: UITableViewController {
                     tableView.beginUpdates()
                     
                     if self.isFiltering() {
-                        self.deleteEmployee(employee: self.filteredEmployees[indexPath.row])
-                        self.filteredEmployees.remove(at: indexPath.row)
+                        CoreDataManager.shared.deleteEmployee(employee: self.filteredEmployees[indexPath.row]) { (error) in
+                            if error != nil {
+                                SVProgressHUD.showError(withStatus: "Could not delete employee")
+                            } else {
+                                self.filteredEmployees.remove(at: indexPath.row)
+                                SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
+                            }
+                        }
                     } else {
-                        self.deleteEmployee(employee: self.tableData[indexPath.row])
-                        self.tableData.remove(at: indexPath.row)
+                        CoreDataManager.shared.deleteEmployee(employee: self.tableData[indexPath.row]) { (error) in
+                            if error != nil {
+                                SVProgressHUD.showError(withStatus: "Could not delete employee")
+                            } else {
+                                self.tableData.remove(at: indexPath.row)
+                                SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
+                            }
+                        }
                     }
                     
                     tableView.deleteRows(at: [indexPath], with: .automatic)
