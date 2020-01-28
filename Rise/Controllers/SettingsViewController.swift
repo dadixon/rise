@@ -374,8 +374,8 @@ class SettingsViewController: FormViewController {
     }
     
     private func getNotificationTextCount() -> Int {
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        var rv = [Employee]()
+//        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//        var rv = [Employee]()
         var calendar = Calendar.current
         
         calendar.timeZone = NSTimeZone.local
@@ -385,16 +385,26 @@ class SettingsViewController: FormViewController {
         let noNotePredicate = NSPredicate(format: "latest == nil AND userId == %@", UserDefaults.userUID)
         let storeDaysPredicate = NSPredicate(format: "latest <= %@ AND userId == %@", dateTo! as NSDate, UserDefaults.userUID)
         let datePredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
-        let request: NSFetchRequest<Employee> = Employee.fetchRequest()
+//        let request: NSFetchRequest<Employee> = Employee.fetchRequest()
+//
+//        request.predicate = datePredicate
 
-        request.predicate = datePredicate
-
-        do {
-            rv = try context.fetch(request)
-            return rv.count
-        } catch {
-            print("Error fetching data from context \(error)")
+        let employees = CoreDataManager.shared.getEmployees(predicates: datePredicate, sortedBy: nil) { (error) in
+            if error != nil {
+                print("Error fetching data from context \(error)")
+            }
         }
+        
+        if let employees = employees {
+            return employees.count
+        }
+        
+//        do {
+//            rv = try context.fetch(request)
+//            return rv.count
+//        } catch {
+//            print("Error fetching data from context \(error)")
+//        }
 
         return 0
     }
@@ -432,18 +442,25 @@ class SettingsViewController: FormViewController {
     }
     
     private func deleteEmployees() {
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        
         let userPredicate = NSPredicate(format: "userId == %@", UserDefaults.userUID)
-        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Employee")
-        fetch.predicate = userPredicate
-        let request = NSBatchDeleteRequest(fetchRequest: fetch)
         
-        do {
-            try context.execute(request)
-        } catch {
-            SVProgressHUD.showError(withStatus: "Something went wrong")
+        CoreDataManager.shared.deleteAllEmployees(predicate: userPredicate) { (error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "Something went wrong")
+            }
         }
+//        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//
+//
+//        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Employee")
+//        fetch.predicate = userPredicate
+//        let request = NSBatchDeleteRequest(fetchRequest: fetch)
+//
+//        do {
+//            try context.execute(request)
+//        } catch {
+//
+//        }
     }
     
     private func deleteFromDatabase() {

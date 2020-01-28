@@ -19,7 +19,7 @@ class EmployeeDetailsViewController: UIViewController {
     
     var employee = Employee()
     var notes = [Note]()
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     var deleteEmployeeIndexPath: IndexPath? = nil
     var selectedEmployeeIndexPath: IndexPath? = nil
     var selectedNote: Note? = nil
@@ -102,24 +102,6 @@ class EmployeeDetailsViewController: UIViewController {
         }
     }
     
-    func deleteNote(note: Note) {
-        employee.removeFromNotes(note)
-        
-        let notes = sortedNotes()
-        
-        if notes.count > 0 {
-            employee.latest = notes[0].created
-        }
-        
-        context.delete(note)
-        
-        do {
-            try context.save()
-        } catch {
-            SVProgressHUD.showSuccess(withStatus: "Note has been deleted")
-        }
-    }
-    
     @objc func confirmUpdateEmployee() {
         guard let fullName = nameTextField.text, !fullName.isEmpty else {
             SVProgressHUD.showSuccess(withStatus: "Please input a name")
@@ -180,7 +162,14 @@ extension EmployeeDetailsViewController: UITableViewDelegate {
                 if let indexPath = self.deleteEmployeeIndexPath {
                     tableView.beginUpdates()
 
-                    self.deleteNote(note: self.notes[indexPath.row])
+                    CoreDataManager.shared.deleteNote(note: self.notes[indexPath.row], employee: self.notes[indexPath.row].employee!) { (error) in
+                        if error != nil {
+                            SVProgressHUD.showError(withStatus: "Could not delete note")
+                        } else {
+                            SVProgressHUD.showSuccess(withStatus: "Note deleted")
+                        }
+                    }
+//                    self.deleteNote(note: self.notes[indexPath.row])
                     self.notes.remove(at: indexPath.row)
                     self.employeeDetailsLabel.text = self.setNoteDetails(count: self.notes.count, days: UserDefaults.storeDays)
 

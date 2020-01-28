@@ -18,10 +18,8 @@ class EmployeesTableViewController: UITableViewController {
     
     let userDefaults = UserDefaults.standard
     
-    var employees: [Employee]?
+    var employees = [Employee]()
     var filteredEmployees = [Employee]()
-    var tableData = [Employee]()
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let searchController = UISearchController(searchResultsController: nil)
     var deleteEmployeeIndexPath: IndexPath? = nil
     var selectedEmployeeIndexPath: IndexPath? = nil
@@ -37,14 +35,9 @@ class EmployeesTableViewController: UITableViewController {
         setupNavigation()
         
         if let employees = setEmployees() {
-            tableData = employees
+            self.employees = employees
             tableView.reloadData()
-            
-            if tableData.count == 0 {
-                tableView.backgroundView = BackgroundView()
-            } else {
-                tableView.backgroundView = nil
-            }
+            resetTable(employees: employees)
         }
     }
 
@@ -64,6 +57,12 @@ class EmployeesTableViewController: UITableViewController {
             
             self.user = user
         })
+        
+        if let employees = setEmployees() {
+            self.employees = employees
+            tableView.reloadData()
+            resetTable(employees: employees)
+        }
     }
     
     private func setup() {
@@ -110,13 +109,24 @@ class EmployeesTableViewController: UITableViewController {
         })
     }
     
+    private func resetTable(employees: [Employee]) {
+        if employees.count == 0 {
+            tableView.backgroundView = BackgroundView()
+        } else {
+            tableView.backgroundView = nil
+        }
+    }
+    
     func searchBarIsEmpty() -> Bool {
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        filteredEmployees = tableData.filter({( employee : Employee) -> Bool in
-            return (employee.fullName?.lowercased().contains(searchText.lowercased()))!
+        filteredEmployees = employees.filter({( employee : Employee) -> Bool in
+            guard let fullName = employee.fullName else {
+                return false
+            }
+            return (fullName.lowercased().contains(searchText.lowercased()))
         })
         
         tableView.reloadData()
@@ -126,26 +136,11 @@ class EmployeesTableViewController: UITableViewController {
         return searchController.isActive && !searchBarIsEmpty()
     }
     
-//    func deleteEmployee(employee: Employee) {
-//        context.delete(employee)
-//
-//        do {
-//            try context.save()
-//        } catch {
-//            SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
-//        }
-//    }
-    
     @IBAction func unwindToEmployeesDashboard(segue:UIStoryboardSegue) {
         if let employees = setEmployees() {
-            tableData = employees
+            self.employees = employees
             tableView.reloadData()
-            
-            if tableData.count == 0 {
-                tableView.backgroundView = BackgroundView()
-            } else {
-                tableView.backgroundView = nil
-            }
+            resetTable(employees: employees)
         }
     }
     
@@ -159,28 +154,31 @@ class EmployeesTableViewController: UITableViewController {
         if isFiltering() {
             return filteredEmployees.count
         }
-        
-        return tableData.count
+        return employees.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "EmployeeCell", for: indexPath) as! EmployeeTableViewCell
-        let employee: Employee
+        let employee: Employee?
         
         if isFiltering() {
             employee = filteredEmployees[indexPath.row]
         } else {
-            employee = tableData[indexPath.row]
+            employee = employees[indexPath.row]
         }
         
-        cell.nameLabel.text = employee.fullName!
+        guard (employee?.fullName) != nil else {
+            return cell
+        }
         
-        if let noteCount = employee.notes?.count {
+        cell.nameLabel.text = employee?.fullName
+        
+        if let noteCount = employee?.notes?.count {
             cell.noteCountLabel.text = "\(noteCount) " + Utility.formatPlural(count: noteCount, object: "Note")
         }
         
-        if let latest = employee.latest {
+        if let latest = employee?.latest {
             cell.createdLabel.text = Utility.textFormat(from: latest)
             cell.backgroundColor = Utility.cellColor(from: latest)
         } else {
@@ -202,33 +200,51 @@ class EmployeesTableViewController: UITableViewController {
                 if let indexPath = self.deleteEmployeeIndexPath {
                     tableView.beginUpdates()
                     
+                    var tableData = [Employee]()
+                    
                     if self.isFiltering() {
-                        CoreDataManager.shared.deleteEmployee(employee: self.filteredEmployees[indexPath.row]) { (error) in
-                            if error != nil {
-                                SVProgressHUD.showError(withStatus: "Could not delete employee")
-                            } else {
-                                self.filteredEmployees.remove(at: indexPath.row)
-                                SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
-                            }
-                        }
+                        tableData = self.filteredEmployees
+//                        CoreDataManager.shared.deleteEmployee(employee: self.filteredEmployees[indexPath.row]) { (error) in
+//                            if error != nil {
+//                                SVProgressHUD.showError(withStatus: "Could not delete employee")
+//                            } else {
+//                                self.employees.removeAll { (employee) -> Bool in
+//                                    employee == self.filteredEmployees[indexPath.row]
+//                                }
+//                                self.filteredEmployees.remove(at: indexPath.row)
+//                                SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
+//                            }
+//                        }
                     } else {
-                        CoreDataManager.shared.deleteEmployee(employee: self.tableData[indexPath.row]) { (error) in
-                            if error != nil {
-                                SVProgressHUD.showError(withStatus: "Could not delete employee")
-                            } else {
-                                self.tableData.remove(at: indexPath.row)
-                                SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
+                        tableData = self.employees
+//                        CoreDataManager.shared.deleteEmployee(employee: self.employees[indexPath.row]) { (error) in
+//                            if error != nil {
+//                                SVProgressHUD.showError(withStatus: "Could not delete employee")
+//                            } else {
+//                                self.employees.remove(at: indexPath.row)
+//                                SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
+//                            }
+//                        }
+                    }
+                    
+                    CoreDataManager.shared.deleteEmployee(employee: tableData[indexPath.row]) { (error) in
+                        if error != nil {
+                            SVProgressHUD.showError(withStatus: "Could not delete employee")
+                        } else {
+                            self.employees.removeAll { (employee) -> Bool in
+                                employee == tableData[indexPath.row]
                             }
+                            self.filteredEmployees.removeAll { (employee) -> Bool in
+                                employee == tableData[indexPath.row]
+                            }
+//                            self.filteredEmployees.remove(at: indexPath.row)
+                            SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
                         }
                     }
                     
                     tableView.deleteRows(at: [indexPath], with: .automatic)
                     self.deleteEmployeeIndexPath = nil
-                    if self.tableData.count == 0 {
-                        self.tableView.backgroundView = BackgroundView()
-                    } else {
-                        self.tableView.backgroundView = nil
-                    }
+                    self.resetTable(employees: tableData)
                     tableView.endUpdates()
                 }
                 completionHandler(true)
@@ -302,7 +318,7 @@ class EmployeesTableViewController: UITableViewController {
                 if isFiltering() {
                     employee = filteredEmployees[indexPath.row]
                 } else {
-                    employee = tableData[indexPath.row]
+                    employee = employees[indexPath.row]
                 }
                 
                 vc.employee = employee
@@ -315,7 +331,7 @@ class EmployeesTableViewController: UITableViewController {
                 if isFiltering() {
                     employee = filteredEmployees[indexPath.row]
                 } else {
-                    employee = tableData[indexPath.row]
+                    employee = employees[indexPath.row]
                 }
                 
                 vc.employee = employee

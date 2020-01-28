@@ -19,7 +19,7 @@ class AddNoteViewController: UIViewController {
     @IBOutlet weak var topConstraintDate: NSLayoutConstraint!
     @IBOutlet weak var bottomConstraintDate: NSLayoutConstraint!
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let dateFormatter = DateFormatter()
     
     var employee = Employee()
@@ -85,28 +85,12 @@ class AddNoteViewController: UIViewController {
         if diffInDays > UserDefaults.storeDays && UserDefaults.storeDays < 101 {
            throw ErrorsToThrow.tooFarBehind
         } else {
-            let note = Note(context: context)
-            note.text = text
-            note.created = dateFormatter.date(from: created)
-            
-            employee.addToNotes(note)
-            
-            let notes = employee.notes?.sorted(by: { (a, b) -> Bool in
-                if (a as! Note) != nil, (b as! Note) != nil {
-                    return (a as! Note).created?.compare((b as! Note).created!) == .orderedDescending
+            CoreDataManager.shared.insertNote(text: text, created: dateFormatter.date(from: created), employee: employee) { (error) in
+                if error != nil {
+                    SVProgressHUD.showError(withStatus: "Error saving item")
                 } else {
-                    return false
+                    SVProgressHUD.showSuccess(withStatus: "Note Saved")
                 }
-            }) as! [Note]
-
-            employee.latest = notes[0].created
-            
-            do {
-                try context.save()
-                SVProgressHUD.showSuccess(withStatus: "Note Saved")
-            } catch {
-                print("Error saving context \(error)")
-                throw ErrorsToThrow.canNotSave
             }
         }
     }
@@ -128,19 +112,12 @@ class AddNoteViewController: UIViewController {
         if diffInDays > UserDefaults.storeDays && UserDefaults.storeDays < 101 {
             throw ErrorsToThrow.tooFarBehind
         } else {
-            note.setValue(text, forKey: "text")
-            note.setValue(dateFormatter.date(from: created), forKey: "created")
-            
-            let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
-            
-            employee.latest = notes[0].created
-            
-            do {
-                try context.save()
-                SVProgressHUD.showSuccess(withStatus: "Note Updated")
-            } catch {
-                print("Error saving context \(error)")
-                throw ErrorsToThrow.canNotSave
+            CoreDataManager.shared.updateNote(text: text, created: dateFormatter.date(from: created), note: note, employee: employee) { (error) in
+                if error != nil {
+                    SVProgressHUD.showError(withStatus: "Error saving item")
+                } else {
+                    SVProgressHUD.showSuccess(withStatus: "Note Updated")
+                }
             }
         }
     }
@@ -199,8 +176,8 @@ class AddNoteViewController: UIViewController {
         let dateFrom = calendar.startOfDay(for: Date())
         let minimumDate = calendar.date(byAdding: .day, value: -3, to: dateFrom)
         
-        datePickerView.minimumDate = minimumDate
-        datePickerView.maximumDate = dateFrom
+//        datePickerView.minimumDate = minimumDate
+//        datePickerView.maximumDate = dateFrom
         
         createdDate.inputView = datePickerView
         datePickerView.addTarget(self, action: #selector(self.datePickerFromValueChanged), for: UIControl.Event.valueChanged)

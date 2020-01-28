@@ -59,9 +59,9 @@ class Utility {
     }
     
     static func removeOldNotes() {
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        var rv = [Note]()
-        var employees = [Employee]()
+//        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//        var rv = [Note]()
+//        var employees = [Employee]()
         var calendar = Calendar.current
         
         calendar.timeZone = NSTimeZone.local
@@ -69,44 +69,66 @@ class Utility {
         let dateFrom = calendar.startOfDay(for: Date())
         let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
         let storeDaysPredicate = NSPredicate(format: "created < %@", dateTo! as NSDate)
-        let request: NSFetchRequest<Note> = Note.fetchRequest()
+//        let request: NSFetchRequest<Note> = Note.fetchRequest()
+//
+//        request.predicate = storeDaysPredicate
         
-        request.predicate = storeDaysPredicate
+        // Get all old notes
+        let mainPredicate = NSCompoundPredicate(type: .or, subpredicates: [storeDaysPredicate])
         
-        do {
-            rv = try context.fetch(request)
-            
-            for note in rv {
-                context.delete(note)
+        let notes = CoreDataManager.shared.getNotes(predicates: mainPredicate, sortedBy: nil) { (error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "Could not delete old notes")
             }
-            
-            let employeesRequest: NSFetchRequest<Employee> = Employee.fetchRequest()
-            
-            do {
-                employees = try context.fetch(employeesRequest)
-                
-                for employee in employees {
-                    let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
-                    
-                    if notes.count > 0 {
-                        employee.latest = notes[0].created
-                    } else {
-                        employee.latest = nil
+        }
+        
+        // Delete all old notes
+        if let notes = notes {
+            for note in notes {
+                CoreDataManager.shared.deleteNote(note: note, employee: note.employee!) { (error) in
+                    if error != nil {
+                        SVProgressHUD.showError(withStatus: "Could not delete note")
                     }
                 }
-                
-            } catch {
-                
             }
-            
-            do {
-                try context.save()
-            } catch {
-                
-            }
-        } catch {
-            print("Error fetching data from context \(error)")
         }
+        
+        
+        
+//        do {
+//            rv = try context.fetch(request)
+//
+//            for note in rv {
+//                context.delete(note)
+//            }
+//
+//            let employeesRequest: NSFetchRequest<Employee> = Employee.fetchRequest()
+//
+//            do {
+//                employees = try context.fetch(employeesRequest)
+//
+//                for employee in employees {
+//                    let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
+//
+//                    if notes.count > 0 {
+//                        employee.latest = notes[0].created
+//                    } else {
+//                        employee.latest = nil
+//                    }
+//                }
+//
+//            } catch {
+//
+//            }
+//
+//            do {
+//                try context.save()
+//            } catch {
+//
+//            }
+//        } catch {
+//            print("Error fetching data from context \(error)")
+//        }
     }
     
     static func formatPlural(count: Int, object: String) -> String {
