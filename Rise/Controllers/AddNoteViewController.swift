@@ -176,8 +176,8 @@ class AddNoteViewController: UIViewController {
         let dateFrom = calendar.startOfDay(for: Date())
         let minimumDate = calendar.date(byAdding: .day, value: -3, to: dateFrom)
         
-//        datePickerView.minimumDate = minimumDate
-//        datePickerView.maximumDate = dateFrom
+        datePickerView.minimumDate = minimumDate
+        datePickerView.maximumDate = dateFrom
         
         createdDate.inputView = datePickerView
         datePickerView.addTarget(self, action: #selector(self.datePickerFromValueChanged), for: UIControl.Event.valueChanged)
