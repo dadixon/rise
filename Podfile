@@ -9,28 +9,8 @@ target 'Rise' do
   pod 'Firebase/Core'
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
   pod 'SVProgressHUD'
-  pod 'Eureka'
+  pod 'Eureka', '~> 5.2'
 
-  target 'RiseTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-  target 'RiseUITests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-end
-
-post_install do |installer|
-    installer.pods_project.targets.each do |target|
-        
-        if  target.name == 'Eureka'
-            target.build_configurations.each do |config|
-                config.build_settings['SWIFT_VERSION'] = '4.0'
-            end
-        end
-    end
 end

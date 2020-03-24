@@ -19,12 +19,11 @@ class AddNoteViewController: UIViewController {
     @IBOutlet weak var topConstraintDate: NSLayoutConstraint!
     @IBOutlet weak var bottomConstraintDate: NSLayoutConstraint!
     
-//    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let dateFormatter = DateFormatter()
     
-    var employee = Employee()
-    var note: Note!
-    var editNote: Bool!
+    var member: Member?
+    var comment: Comment?
+    var editComment: Bool!
     var backTo: String!
     
     override func viewDidLoad() {
@@ -49,18 +48,21 @@ class AddNoteViewController: UIViewController {
         SVProgressHUD.setDefaultStyle(.dark)
         SVProgressHUD.setMinimumDismissTimeInterval(3.0)
         
-        titleLabel.text = "Note for " + employee.fullName!
+        if let member = member {
+            titleLabel.text = "Note for " + member.fullName
+        }
+        
         saveBtn.setTitle("Save Note", for: .normal)
         dateFormatter.dateFormat = "MM-dd-yyyy"
         createdDate.text = dateFormatter.string(from: Date())
-        editNote = false
+        editComment = false
         
         noteTextArea.becomeFirstResponder()
         
-        if note != nil {
-            editNote = true
-            noteTextArea.text = note.text
-            createdDate.text = dateFormatter.string(from: note.created!)
+        if let comment = comment {
+            editComment = true
+            noteTextArea.text = comment.comment
+            createdDate.text = dateFormatter.string(from: comment.date)
         }
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(AddEmployeeViewController.dismissKeyboard))
@@ -68,7 +70,7 @@ class AddNoteViewController: UIViewController {
         self.view.addGestureRecognizer(tap)
     }
     
-    private func saveNote() throws {
+    private func saveComment() throws {
         guard let text = noteTextArea.text, !text.isEmpty else {
             throw ErrorsToThrow.noteTextNotFound
         }
@@ -85,17 +87,21 @@ class AddNoteViewController: UIViewController {
         if diffInDays > UserDefaults.storeDays && UserDefaults.storeDays < 101 {
            throw ErrorsToThrow.tooFarBehind
         } else {
-            CoreDataManager.shared.insertNote(text: text, created: dateFormatter.date(from: created), employee: employee) { (error) in
+            guard let member = member else {
+                return
+            }
+            
+            FirebaseManager.shared.addNote(eid: member.id, note: Comment(date: dateFormatter.date(from: created)!, comment: text), completionHandler: { (error) in
                 if error != nil {
                     SVProgressHUD.showError(withStatus: "Error saving item")
                 } else {
                     SVProgressHUD.showSuccess(withStatus: "Note Saved")
                 }
-            }
+            })
         }
     }
     
-    private func updateNote(note: Note) throws {
+    private func updateComment(comment: Comment) throws {
         guard let text = noteTextArea.text, !text.isEmpty else {
             throw ErrorsToThrow.noteTextNotFound
         }
@@ -112,7 +118,11 @@ class AddNoteViewController: UIViewController {
         if diffInDays > UserDefaults.storeDays && UserDefaults.storeDays < 101 {
             throw ErrorsToThrow.tooFarBehind
         } else {
-            CoreDataManager.shared.updateNote(text: text, created: dateFormatter.date(from: created), note: note, employee: employee) { (error) in
+            guard let member = member else {
+                return
+            }
+            
+            FirebaseManager.shared.updateNotes(member: member, comment: Comment(date: dateFormatter.date(from: created)!, comment: text, timestamp: comment.timestamp)) { (error) in
                 if error != nil {
                     SVProgressHUD.showError(withStatus: "Error saving item")
                 } else {
@@ -122,10 +132,12 @@ class AddNoteViewController: UIViewController {
         }
     }
     
-    @IBAction func saveNoteClicked(_ sender: Any) {
-        if editNote {
+    @IBAction func saveCommentClicked(_ sender: Any) {
+        if editComment {
             do {
-                try updateNote(note: self.note)
+                if let comment = self.comment {
+                    try updateComment(comment: comment)
+                }
                 
                 if backTo == "Dashboard" {
                     performSegue(withIdentifier: "unwindToEmployeeDashboard", sender: self)
@@ -145,7 +157,7 @@ class AddNoteViewController: UIViewController {
             }
         } else {
             do {
-                try saveNote()
+                try saveComment()
                 
                 if backTo == "Dashboard" {
                     performSegue(withIdentifier: "unwindToEmployeeDashboard", sender: self)

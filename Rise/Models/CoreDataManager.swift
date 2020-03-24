@@ -79,11 +79,13 @@ class CoreDataManager {
         }
     }
     
-    func deleteAllEmployees(predicate: NSPredicate, completion: @escaping (_ error: Error?) -> Void) {
+    func deleteAllEmployees(predicate: NSPredicate?, completion: @escaping (_ error: Error?) -> Void) {
         let context = CoreDataManager.shared.persistentContainer.viewContext
         let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Employee")
         
-        fetch.predicate = predicate
+        if let predicate = predicate {
+            fetch.predicate = predicate
+        }
         
         let request = NSBatchDeleteRequest(fetchRequest: fetch)
         

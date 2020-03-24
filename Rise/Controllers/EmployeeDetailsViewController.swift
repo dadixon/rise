@@ -17,12 +17,12 @@ class EmployeeDetailsViewController: UIViewController {
     @IBOutlet weak var employeeDetailsLabel: UILabel!
     @IBOutlet weak var nameTextField: UITextField!
     
-    var employee = Employee()
-    var notes = [Note]()
-//    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var memberId: String!
+    var member: Member?
+    var comments = [Comment]()
     var deleteEmployeeIndexPath: IndexPath? = nil
     var selectedEmployeeIndexPath: IndexPath? = nil
-    var selectedNote: Note? = nil
+    var selectedComment: Comment? = nil
     let userDefault = UserDefaults.standard
     var tap: UIGestureRecognizer? = nil
     
@@ -30,18 +30,7 @@ class EmployeeDetailsViewController: UIViewController {
         super.viewDidLoad()
 
         setup()
-        setupNavigation()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        notes = sortedNotes()
-        self.notesTable.reloadData()
-        
-        nameLabel.text = employee.fullName!
-        employeeDetailsLabel.text = setNoteDetails(count: notes.count, days: UserDefaults.storeDays)
-        selectedNote = nil
+        getNotes()
     }
     
     private func setup() {
@@ -51,12 +40,11 @@ class EmployeeDetailsViewController: UIViewController {
         notesTable.delegate = self
         notesTable.dataSource = self
         notesTable.tableFooterView = UIView()
-        
-        notes = sortedNotes()
-        
+                
         nameTextField.delegate = self
         nameTextField.isHidden = true
         nameLabel.isUserInteractionEnabled = true
+        
         let aSelector : Selector = #selector(lblTapped)
         let tapGesture = UITapGestureRecognizer(target: self, action: aSelector)
         tapGesture.numberOfTapsRequired = 1
@@ -67,14 +55,12 @@ class EmployeeDetailsViewController: UIViewController {
     }
     
     func setupNavigation() {
-        self.navigationController!.navigationItem.title = "\(employee.fullName!)"
+        if let member = member {
+            self.navigationController!.navigationItem.title = "\(member.fullName)"
+        }
         
         let button1 = UIBarButtonItem(title: "+ Note", style: .plain, target: self, action: #selector(addNoteClicked))
         self.navigationItem.rightBarButtonItem  = button1
-    }
-    
-    private func sortedNotes() -> [Note] {
-        return employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
     }
     
     private func setNoteDetails(count: Int, days: Int) -> String {
@@ -96,9 +82,9 @@ class EmployeeDetailsViewController: UIViewController {
         }
         
         if days > 100 {
-            return "\(notes.count) " + noteText
+            return "\(comments.count) " + noteText
         } else {
-            return "\(notes.count) " + noteText + " in the past \(days) " + dayText
+            return "\(comments.count) " + noteText + " in the past \(days) " + dayText
         }
     }
     
@@ -112,13 +98,14 @@ class EmployeeDetailsViewController: UIViewController {
         nameLabel.isHidden = false
         nameLabel.text = nameTextField.text
         
-        CoreDataManager.shared.updateEmployee(name: fullName, employee: employee, completion: { (error) in
+        FirebaseManager.shared.updateEmployee(eid: memberId, data: ["fullName": fullName.base64Encode() ?? "No Name"]) { (error) in
             if error != nil {
                 SVProgressHUD.showError(withStatus: "Could not save")
             } else {
                 SVProgressHUD.showSuccess(withStatus: "Employee Updated")
             }
-        })
+        }
+        
         self.view.removeGestureRecognizer(tap!)
     }
     
@@ -138,15 +125,37 @@ class EmployeeDetailsViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showAddNote" {
             let vc = segue.destination as! AddNoteViewController
-                
-            vc.employee = employee
-            vc.note = selectedNote
+
+            vc.member = member
+            vc.comment = selectedComment
             vc.backTo = "Details"
         }
     }
     
+    private func getNotes() {
+        SVProgressHUD.show()
+        FirebaseManager.shared.getEmployee(id: memberId) { (member, error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "There was an error retrieving this data")
+            } else {
+                if let member = member {
+                    self.member = member
+                    self.comments = member.comments
+                    self.notesTable.reloadData()
+                    
+                    self.nameLabel.text = member.fullName
+                    self.employeeDetailsLabel.text = self.setNoteDetails(count: self.comments.count, days: UserDefaults.storeDays)
+                    self.selectedComment = nil
+                    
+                    self.setupNavigation()
+                    SVProgressHUD.dismiss()
+                }
+            }
+        }
+    }
+    
     @IBAction func unwindToEmployeesDetails(segue:UIStoryboardSegue) {
-        
+        getNotes()
     }
 }
 
@@ -160,22 +169,18 @@ extension EmployeeDetailsViewController: UITableViewDelegate {
 
             alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: {(_) in
                 if let indexPath = self.deleteEmployeeIndexPath {
-                    tableView.beginUpdates()
-
-                    CoreDataManager.shared.deleteNote(note: self.notes[indexPath.row], employee: self.notes[indexPath.row].employee!) { (error) in
-                        if error != nil {
-                            SVProgressHUD.showError(withStatus: "Could not delete note")
-                        } else {
-                            SVProgressHUD.showSuccess(withStatus: "Note deleted")
+                    if let member = self.member {
+                        FirebaseManager.shared.deleteNote(member: member, comment: self.comments[indexPath.row]) { (results, error) in
+                            if error != nil {
+                                SVProgressHUD.showError(withStatus: "Could not delete note")
+                            } else {
+                                self.getNotes()
+                                SVProgressHUD.showSuccess(withStatus: "Note deleted")
+                            }
                         }
                     }
-//                    self.deleteNote(note: self.notes[indexPath.row])
-                    self.notes.remove(at: indexPath.row)
-                    self.employeeDetailsLabel.text = self.setNoteDetails(count: self.notes.count, days: UserDefaults.storeDays)
-
-                    tableView.deleteRows(at: [indexPath], with: .automatic)
+                    
                     self.deleteEmployeeIndexPath = nil
-                    tableView.endUpdates()
                 }
                 completionHandler(true)
             }))
@@ -198,7 +203,7 @@ extension EmployeeDetailsViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedNote = notes[indexPath.row]
+        selectedComment = comments[indexPath.row]
 
         performSegue(withIdentifier: "showAddNote", sender: nil)
     }
@@ -206,17 +211,17 @@ extension EmployeeDetailsViewController: UITableViewDelegate {
 
 extension EmployeeDetailsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return notes.count
+        return comments.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "EmployeeNoteCell", for: indexPath) as! NoteTableViewCell
         
-        let note = notes[indexPath.row]
+        let comment = comments[indexPath.row]
         
-        cell.previewLabel.text = note.text
-        cell.createdLabel.text = Utility.textFormat(from: note.created!)
-        cell.backgroundColor = Utility.cellColor(from: note.created!)
+        cell.previewLabel.text = comment.comment
+        cell.createdLabel.text = Utility.textFormat(from: comment.date)
+        cell.backgroundColor = Utility.cellColor(from: comment.date)
         
         return cell
     }

@@ -18,11 +18,11 @@ class EmployeesTableViewController: UITableViewController {
     
     let userDefaults = UserDefaults.standard
     
-    var employees = [Employee]()
-    var filteredEmployees = [Employee]()
+    var members = [Member]()
+    var filteredMembers = [Member]()
     let searchController = UISearchController(searchResultsController: nil)
-    var deleteEmployeeIndexPath: IndexPath? = nil
-    var selectedEmployeeIndexPath: IndexPath? = nil
+    var deleteMemberIndexPath: IndexPath? = nil
+    var selectedMemberIndexPath: IndexPath? = nil
     var user: User!
 
     override func viewDidLoad() {
@@ -30,19 +30,19 @@ class EmployeesTableViewController: UITableViewController {
         
         self.clearsSelectionOnViewWillAppear = true
         self.tableView.tableFooterView = UIView()
-
+        self.tableView.backgroundView = nil
+        
         setup()
         setupNavigation()
         
-        if let employees = setEmployees() {
-            self.employees = employees
-            tableView.reloadData()
-            resetTable(employees: employees)
-        }
+        members = [Member]()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        members = [Member]()
+        self.tableView.reloadData()
         
         Auth.auth().addStateDidChangeListener({ (auth, user) in
             guard let user = user else {
@@ -56,13 +56,17 @@ class EmployeesTableViewController: UITableViewController {
             }
             
             self.user = user
+            self.migration(id: self.user.uid)
+            self.getMembers()
+            
+            FirebaseManager.shared.getSettings(uid: user.uid) { (error) in
+                if error != nil {
+                    
+                }
+                
+//                print(UserDefaults.timeManagedReminder)
+            }
         })
-        
-        if let employees = setEmployees() {
-            self.employees = employees
-            tableView.reloadData()
-            resetTable(employees: employees)
-        }
     }
     
     private func setup() {
@@ -82,35 +86,29 @@ class EmployeesTableViewController: UITableViewController {
         definesPresentationContext = true
     }
     
-    private func setEmployees() -> [Employee]? {
-        let noNotePredicate = NSPredicate(format: "latest == nil AND userId == %@", UserDefaults.userUID)
-        var mainPredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate])
-        
-        if UserDefaults.storeDays < 101 {
-            var calendar = Calendar.current
-            calendar.timeZone = NSTimeZone.local
-            let dateFrom = calendar.startOfDay(for: Date())
-            let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
-            let storeDaysPredicate = NSPredicate(format: "latest >= %@ AND userId == %@", dateTo! as NSDate, UserDefaults.userUID)
-            
-            mainPredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
-        } else {
-            let allUserEmployeesPredicate = NSPredicate(format: "userId == %@", UserDefaults.userUID)
-            
-            mainPredicate = NSCompoundPredicate(type: .or, subpredicates: [allUserEmployeesPredicate])
-        }
-        
-        let sortDescriptor = NSSortDescriptor(key: "latest", ascending: UserDefaults.sortOrder)
-        
-        return CoreDataManager.shared.getEmployees(predicates: mainPredicate, sortedBy: [sortDescriptor], completion: { (error) in
+    private func getMembers() {
+        SVProgressHUD.show(withStatus: "Loading")
+        FirebaseManager.shared.getEmployees(uid: self.user.uid) { (results, error) in
             if error != nil {
-                SVProgressHUD.showError(withStatus: "Error fetching Employees")
+                SVProgressHUD.dismiss()
+                SVProgressHUD.showError(withStatus: "There was a problem getting your data")
+            } else {
+                Utility.deleteAllOldNotes(members: results.members) { (error) in
+                    if error != nil {
+                        print(error?.localizedDescription)
+                    } else {
+                        self.members = Utility.sortByLatestComment(members: results.members)
+                        self.tableView.reloadData()
+                        self.resetTable(members: self.members)
+                        SVProgressHUD.dismiss()
+                    }
+                }
             }
-        })
+        }
     }
     
-    private func resetTable(employees: [Employee]) {
-        if employees.count == 0 {
+    private func resetTable(members: [Member]) {
+        if members.count == 0 {
             tableView.backgroundView = BackgroundView()
         } else {
             tableView.backgroundView = nil
@@ -122,11 +120,8 @@ class EmployeesTableViewController: UITableViewController {
     }
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        filteredEmployees = employees.filter({( employee : Employee) -> Bool in
-            guard let fullName = employee.fullName else {
-                return false
-            }
-            return (fullName.lowercased().contains(searchText.lowercased()))
+        filteredMembers = members.filter({( member : Member) -> Bool in
+            return (member.fullName.lowercased().contains(searchText.lowercased()))
         })
         
         tableView.reloadData()
@@ -137,11 +132,7 @@ class EmployeesTableViewController: UITableViewController {
     }
     
     @IBAction func unwindToEmployeesDashboard(segue:UIStoryboardSegue) {
-        if let employees = setEmployees() {
-            self.employees = employees
-            tableView.reloadData()
-            resetTable(employees: employees)
-        }
+        self.title = UserDefaults.mainTitle
     }
     
     // MARK: - Table view data source
@@ -152,100 +143,87 @@ class EmployeesTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if isFiltering() {
-            return filteredEmployees.count
+            return filteredMembers.count
         }
-        return employees.count
+        return members.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "EmployeeCell", for: indexPath) as! EmployeeTableViewCell
-        let employee: Employee?
+        let member: Member?
         
         if isFiltering() {
-            employee = filteredEmployees[indexPath.row]
+            member = filteredMembers[indexPath.row]
         } else {
-            employee = employees[indexPath.row]
+            member = members[indexPath.row]
         }
         
-        guard (employee?.fullName) != nil else {
+        guard (member?.fullName) != nil else {
             return cell
         }
         
-        cell.nameLabel.text = employee?.fullName
+        cell.nameLabel.text = member?.fullName
         
-        if let noteCount = employee?.notes?.count {
-            cell.noteCountLabel.text = "\(noteCount) " + Utility.formatPlural(count: noteCount, object: "Note")
-        }
+        cell.noteCountLabel.text = "\(member!.comments.count) " + Utility.formatPlural(count: member!.comments.count, object: "Note")
         
-        if let latest = employee?.latest {
+        if let latest = member?.latest {
             cell.createdLabel.text = Utility.textFormat(from: latest)
             cell.backgroundColor = Utility.cellColor(from: latest)
         } else {
             cell.createdLabel.text = ""
-            cell.backgroundColor = UIColor.white
+            cell.backgroundColor = Design.Color.ListNotes.noNotes
         }
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        deleteEmployeeIndexPath = indexPath
+        deleteMemberIndexPath = indexPath
         
         let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "Delete", handler: { (action, view, completionHandler) in
             
-            let alert = UIAlertController(title: "Delete Employee?", message: "Delete Employee", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Delete \(UserDefaults.mainTitle)?", message: "Delete \(UserDefaults.mainTitle)", preferredStyle: .alert)
             
             alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: {(_) in
-                if let indexPath = self.deleteEmployeeIndexPath {
-                    tableView.beginUpdates()
+                if let indexPath = self.deleteMemberIndexPath {
                     
-                    var tableData = [Employee]()
+                    var tableData = [Member]()
                     
                     if self.isFiltering() {
-                        tableData = self.filteredEmployees
-//                        CoreDataManager.shared.deleteEmployee(employee: self.filteredEmployees[indexPath.row]) { (error) in
-//                            if error != nil {
-//                                SVProgressHUD.showError(withStatus: "Could not delete employee")
-//                            } else {
-//                                self.employees.removeAll { (employee) -> Bool in
-//                                    employee == self.filteredEmployees[indexPath.row]
-//                                }
-//                                self.filteredEmployees.remove(at: indexPath.row)
-//                                SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
-//                            }
-//                        }
+                        tableData = self.filteredMembers
                     } else {
-                        tableData = self.employees
-//                        CoreDataManager.shared.deleteEmployee(employee: self.employees[indexPath.row]) { (error) in
-//                            if error != nil {
-//                                SVProgressHUD.showError(withStatus: "Could not delete employee")
-//                            } else {
-//                                self.employees.remove(at: indexPath.row)
-//                                SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
-//                            }
-//                        }
+                        tableData = self.members
                     }
                     
-                    CoreDataManager.shared.deleteEmployee(employee: tableData[indexPath.row]) { (error) in
+                    FirebaseManager.shared.deleteEmployee(eid: tableData[indexPath.row].id) { (error) in
                         if error != nil {
-                            SVProgressHUD.showError(withStatus: "Could not delete employee")
+                            SVProgressHUD.showError(withStatus: "Could not delete \(UserDefaults.mainTitle)")
                         } else {
-                            self.employees.removeAll { (employee) -> Bool in
-                                employee == tableData[indexPath.row]
+                            self.members.removeAll { (member) -> Bool in
+                                member.id == tableData[indexPath.row].id
                             }
-                            self.filteredEmployees.removeAll { (employee) -> Bool in
-                                employee == tableData[indexPath.row]
+
+                            self.filteredMembers.removeAll { (member) -> Bool in
+                                member.id == tableData[indexPath.row].id
                             }
-//                            self.filteredEmployees.remove(at: indexPath.row)
-                            SVProgressHUD.showSuccess(withStatus: "Employee has been deleted")
+                            
+                            self.tableView.beginUpdates()
+                            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                            self.deleteMemberIndexPath = nil
+                            self.tableView.endUpdates()
+                            
+                            if self.isFiltering() {
+                                tableData = self.filteredMembers
+                            } else {
+                                tableData = self.members
+                            }
+                            
+                            self.resetTable(members: tableData)
+                            
+                            SVProgressHUD.showSuccess(withStatus: "\(UserDefaults.mainTitle) has been deleted")
                         }
                     }
-                    
-                    tableView.deleteRows(at: [indexPath], with: .automatic)
-                    self.deleteEmployeeIndexPath = nil
-                    self.resetTable(employees: tableData)
-                    tableView.endUpdates()
                 }
                 completionHandler(true)
             }))
@@ -264,7 +242,7 @@ class EmployeesTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        selectedEmployeeIndexPath = indexPath
+        selectedMemberIndexPath = indexPath
         
         let viewAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "View", handler: { (action, view, completionHandler) in
             
@@ -281,7 +259,7 @@ class EmployeesTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedEmployeeIndexPath = indexPath
+        selectedMemberIndexPath = indexPath
         
         performSegue(withIdentifier: "showAddNote", sender: self)
     }
@@ -311,34 +289,118 @@ class EmployeesTableViewController: UITableViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {        
         if segue.identifier == "showEmployee" {
-            if let indexPath = selectedEmployeeIndexPath {
+            if let indexPath = selectedMemberIndexPath {
                 let vc = segue.destination as! EmployeeDetailsViewController
-                let employee: Employee
-                
+                let member: Member
+
                 if isFiltering() {
-                    employee = filteredEmployees[indexPath.row]
+                    member = filteredMembers[indexPath.row]
                 } else {
-                    employee = employees[indexPath.row]
+                    member = members[indexPath.row]
                 }
-                
-                vc.employee = employee
+
+                vc.memberId = member.id
             }
         } else if segue.identifier == "showAddNote" {
-            if let indexPath = selectedEmployeeIndexPath {
+            if let indexPath = selectedMemberIndexPath {
                 let vc = segue.destination as! AddNoteViewController
-                let employee: Employee
-                
+                let member: Member
+
                 if isFiltering() {
-                    employee = filteredEmployees[indexPath.row]
+                    member = filteredMembers[indexPath.row]
                 } else {
-                    employee = employees[indexPath.row]
+                    member = members[indexPath.row]
                 }
-                
-                vc.employee = employee
+
+                vc.member = member
                 vc.backTo = "Dashboard"
             }
         }
     }
+    
+    // Mark: Migration
+    
+    //    private func testData(id: String) {
+    //        CoreDataManager.shared.insertEmployee(name: "Domonique", userID: id) { (error) in
+    //            if error != nil {
+    //                print(error?.localizedDescription)
+    //            } else {
+    //                print("Saved")
+    //            }
+    //        }
+    //
+    //        let employees = CoreDataManager.shared.getEmployees(predicates: nil, sortedBy: nil) { (error) in
+    //            if error != nil {
+    //                print(error?.localizedDescription)
+    //            }
+    //        }
+    //
+    //        CoreDataManager.shared.insertNote(text: "Beginning", created: Date(), employee: (employees?[0])!) { (error) in
+    //            if error != nil {
+    //                print(error?.localizedDescription)
+    //            }
+    //        }
+    //    }
+        
+        private func migration(id: String) {
+            SVProgressHUD.show()
+            let employees = CoreDataManager.shared.getEmployees(predicates: nil, sortedBy: nil) { (error) in
+                if error != nil {
+                    print(error?.localizedDescription)
+                }
+            }
+                    
+            var members = [Member]()
+            
+            if let employees = employees {
+                for employee in employees {
+                    if let notes = employee.notes?.array {
+                        var comments = [Comment]()
+                        for note in notes as! [Note] {
+                            comments.append(Comment(date: note.created!, comment: note.text!, timestamp: Timestamp(date: note.created!).seconds))
+                        }
+                        
+                        members.append(Member(id: id, fullName: employee.fullName!, latest: nil, comments: comments))
+                    }
+                    
+                    members.append(Member(id: id, fullName: employee.fullName!, latest: nil, comments: []))
+                }
+            }
+            
+            for member in members {
+                var notes = [[String: Any]]()
+                
+                for note in member.comments {
+                    notes.append(note.print())
+                }
+                
+                FirebaseManager.shared.addEmployee(uid: id, fullName: member.fullName, notes: notes) { (id, error) in
+                    if error != nil {
+                        print(error?.localizedDescription)
+                    } else {
+                        FirebaseManager.shared.getEmployees(uid: id) { (results, error) in
+                            if error != nil {
+                                print(error?.localizedDescription)
+                            } else {
+                                Utility.deleteAllOldNotes(members: results.members) { (error) in
+                                    if error != nil {
+                                        print(error?.localizedDescription)
+                                    } else {
+                                        CoreDataManager.shared.deleteAllEmployees(predicate: nil) { (error) in
+                                            if error != nil {
+                                                print(error?.localizedDescription)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            SVProgressHUD.dismiss()
+        }
 }
 
 extension EmployeesTableViewController: UISearchResultsUpdating {

@@ -54,7 +54,7 @@ class RisePrimaryUIButton: UIButton {
         }
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = UIBezierPath(roundedRect: self.bounds, cornerRadius: 26).cgPath
-        shapeLayer.fillColor = Design.Color.Primary.aquamarine.cgColor
+        shapeLayer.fillColor = Design.Color.Primary.aquamarine?.cgColor
         shapeLayer.strokeColor = Design.Color.Secondary.darkGrey.cgColor
         
         self.layer.insertSublayer(shapeLayer, at: 0)

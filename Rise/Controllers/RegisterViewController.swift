@@ -90,6 +90,12 @@ class RegisterViewController: UIViewController {
                 SVProgressHUD.showError(withStatus: error?.localizedDescription)
             }
         }
+        
+        FirebaseManager.shared.addSettings(data: objectToSave) { (error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "Could not save settings")
+            }
+        }
     }
     
     @IBAction func signUpPressed(_ sender: Any) {

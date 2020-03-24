@@ -52,3 +52,18 @@ public extension UIDevice {
     }
     
 }
+
+extension String {
+    func base64Encode() -> String? {
+        let base64Encoded = self.data(using: .utf8)?.base64EncodedString()
+        return base64Encoded
+    }
+    
+    func base64Decode() -> String? {
+        if let base64Decoded = Data(base64Encoded: self) {
+            return String(data: base64Decoded, encoding: .utf8)
+        }
+        
+        return nil
+    }
+}

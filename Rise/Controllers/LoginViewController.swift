@@ -71,7 +71,7 @@ class LoginViewController: UIViewController {
     private func setGeneralData() {
         let ref = Database.database().reference()
         ref.child("clients").child(UserDefaults.userUID).observeSingleEvent(of: .value, with: { (snapshot) in
-            guard let values = snapshot.value as? [String: Any] else {
+            guard let _ = snapshot.value as? [String: Any] else {
                 return
             }
             

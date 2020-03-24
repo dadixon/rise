@@ -19,6 +19,11 @@ enum ErrorsToThrow: Error {
     case tooFarBehind
 }
 
+struct DeleteModel {
+    var member: Member
+    var comment: Comment
+}
+
 class Utility {
     static func textFormat(from date:Date) -> String {
         let diffInDays = Calendar.current.dateComponents([.day], from: date, to: Date()).day
@@ -48,87 +53,81 @@ class Utility {
         }
         
         if diffInDays >= 0 && diffInDays < UserDefaults.reminderStartDays - 2 {
-            return Design.Color.Primary.aquamarine
+            return Design.Color.Primary.aquamarine!
         } else if diffInDays >= UserDefaults.reminderStartDays - 2 && diffInDays < UserDefaults.reminderStartDays {
-            return Design.Color.ListNotes.aqua
+            return Design.Color.ListNotes.aqua!
         } else if diffInDays >= UserDefaults.reminderStartDays {
-            return Design.Color.ListNotes.lightBlue
+            return Design.Color.ListNotes.lightBlue!
         }
         
         return UIColor.white
     }
     
-    static func removeOldNotes() {
-//        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-//        var rv = [Note]()
-//        var employees = [Employee]()
+    static func deleteAllOldNotes(members: [Member], completionHandler: @escaping (_ error: Error?) -> Void) {
         var calendar = Calendar.current
         
         calendar.timeZone = NSTimeZone.local
         
         let dateFrom = calendar.startOfDay(for: Date())
         let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.storeDays, to: dateFrom)
-        let storeDaysPredicate = NSPredicate(format: "created < %@", dateTo! as NSDate)
-//        let request: NSFetchRequest<Note> = Note.fetchRequest()
-//
-//        request.predicate = storeDaysPredicate
+        var deleteComments = [DeleteModel]()
         
-        // Get all old notes
-        let mainPredicate = NSCompoundPredicate(type: .or, subpredicates: [storeDaysPredicate])
-        
-        let notes = CoreDataManager.shared.getNotes(predicates: mainPredicate, sortedBy: nil) { (error) in
-            if error != nil {
-                SVProgressHUD.showError(withStatus: "Could not delete old notes")
-            }
-        }
-        
-        // Delete all old notes
-        if let notes = notes {
-            for note in notes {
-                CoreDataManager.shared.deleteNote(note: note, employee: note.employee!) { (error) in
-                    if error != nil {
-                        SVProgressHUD.showError(withStatus: "Could not delete note")
-                    }
+        for member in members {
+            for comment in member.comments {
+                if comment.date < dateTo! {
+                    deleteComments.append(DeleteModel(member: member, comment: comment))
                 }
             }
         }
+
+        if deleteComments.count > 0 {
+            FirebaseManager.shared.deleteCommentBatch(data: deleteComments) { (error) in
+                if error != nil {
+                    completionHandler(error)
+                    SVProgressHUD.showError(withStatus: "Issue deleting notes")
+                } else {
+                    completionHandler(nil)
+                }
+            }
+        } else {
+            completionHandler(nil)
+        }
+    }
+    
+    static func sortByLatestComment(members: [Member]) -> [Member] {
+        var rv = [Member]()
+        var tempMembers = [Member]()
+        var noComments = [Member]()
         
+        for member in members {
+            if member.latest == nil {
+                noComments.append(member)
+            } else {
+                tempMembers.append(member)
+            }
+        }
         
+        var temp = tempMembers
         
-//        do {
-//            rv = try context.fetch(request)
-//
-//            for note in rv {
-//                context.delete(note)
-//            }
-//
-//            let employeesRequest: NSFetchRequest<Employee> = Employee.fetchRequest()
-//
-//            do {
-//                employees = try context.fetch(employeesRequest)
-//
-//                for employee in employees {
-//                    let notes = employee.notes?.sorted(by: {($0 as! Note).created?.compare(($1 as! Note).created!) == .orderedDescending}) as! [Note]
-//
-//                    if notes.count > 0 {
-//                        employee.latest = notes[0].created
-//                    } else {
-//                        employee.latest = nil
-//                    }
-//                }
-//
-//            } catch {
-//
-//            }
-//
-//            do {
-//                try context.save()
-//            } catch {
-//
-//            }
-//        } catch {
-//            print("Error fetching data from context \(error)")
-//        }
+        if UserDefaults.sortOrder {
+            temp = tempMembers.sorted(by: {($0).latest!.compare(($1).latest!) == .orderedAscending})
+        } else {
+            temp = tempMembers.sorted(by: {($0).latest!.compare(($1).latest!) == .orderedDescending})
+        }
+        
+        rv.append(contentsOf: temp)
+        
+        return rv
+    }
+    
+    static func updateLatestNotes(notes: [Comment]) -> Date? {
+        let orderedNotes = notes.sorted(by: {($0).date.compare(($1).date) == .orderedDescending})
+        
+        if orderedNotes.count > 0 {
+            return notes[0].date
+        } else {
+            return nil
+        }
     }
     
     static func formatPlural(count: Int, object: String) -> String {

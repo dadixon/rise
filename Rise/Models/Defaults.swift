@@ -64,9 +64,13 @@ extension UserDefaults {
     class func set(storeDays: Int) {
         let userDefaults = UserDefaults.standard
         userDefaults.set(storeDays, forKey: Defaults.StoreDays)
-        if storeDays < 101 {
-            Utility.removeOldNotes()
-        }
+//        if storeDays < 101 {
+//            Utility.deleteAllOldNotes { (error) in
+//                if error != nil {
+//                    print(error?.localizedDescription)
+//                }
+//            }
+//        }
     }
     
     class var reminderStartDays: Int {

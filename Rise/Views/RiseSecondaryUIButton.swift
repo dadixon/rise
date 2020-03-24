@@ -58,7 +58,7 @@ class RiseSecondaryUIButton: UIButton {
         shapeLayer.lineWidth = 3
         shapeLayer.path = UIBezierPath(roundedRect: self.bounds, cornerRadius: 26).cgPath
         shapeLayer.fillColor = UIColor.white.cgColor
-        shapeLayer.strokeColor = borderColor.cgColor
+        shapeLayer.strokeColor = borderColor?.cgColor
         
         self.layer.insertSublayer(shapeLayer, at: 0)
         self.roundRectLayer = shapeLayer

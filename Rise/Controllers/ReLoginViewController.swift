@@ -30,7 +30,7 @@ class ReLoginViewController: UIViewController {
         let user = Auth.auth().currentUser
         let credential = EmailAuthProvider.credential(withEmail: username, password: password)
         
-        user?.reauthenticateAndRetrieveData(with: credential, completion: { (data, error) in
+        user?.reauthenticate(with: credential, completion: { (data, error) in
             if let error = error {
                 SVProgressHUD.showError(withStatus: error.localizedDescription)
             } else {

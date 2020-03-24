@@ -18,7 +18,7 @@ class RiseTextField: UITextField {
         
         delegate = self
         
-        focusColor = Design.Color.Primary.aquamarine
+        focusColor = Design.Color.Primary.aquamarine!
         blurColor = Design.Color.Secondary.darkGrey
         
         self.layer.borderColor = blurColor.cgColor

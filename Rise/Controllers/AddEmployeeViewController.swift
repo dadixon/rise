@@ -8,6 +8,7 @@
 
 import UIKit
 import SVProgressHUD
+import Firebase
 
 class AddEmployeeViewController: UIViewController {
 
@@ -43,11 +44,15 @@ class AddEmployeeViewController: UIViewController {
             return
         }
         
-        CoreDataManager.shared.insertEmployee(name: fullName, userID: UserDefaults.userUID) { (error) in
-            if error != nil {
-                SVProgressHUD.showError(withStatus: "Error saving item")
-            } else {
-                self.performSegue(withIdentifier: "unwindToEmployeesDashboard", sender: self)
+        let user = Auth.auth().currentUser
+            
+        if let user = user {
+            FirebaseManager.shared.addEmployee(uid: user.uid, fullName: fullName, notes: []) { (id, error) in
+                if error != nil {
+                    SVProgressHUD.showError(withStatus: "Error saving item")
+                } else {
+                    self.performSegue(withIdentifier: "unwindToEmployeesDashboard", sender: self)
+                }
             }
         }
     }
@@ -58,9 +63,13 @@ class AddEmployeeViewController: UIViewController {
             return
         }
         
-        CoreDataManager.shared.insertEmployee(name: fullName, userID: UserDefaults.userUID) { (error) in
-            if error != nil {
-                SVProgressHUD.showError(withStatus: "Error saving item")
+        let user = Auth.auth().currentUser
+            
+        if let user = user {
+            FirebaseManager.shared.addEmployee(uid: user.uid, fullName: fullName, notes: []) { (id, error) in
+                if error != nil {
+                    SVProgressHUD.showError(withStatus: "Error saving item")
+                }
             }
         }
             
@@ -75,23 +84,4 @@ class AddEmployeeViewController: UIViewController {
     @objc func dismissKeyboard() {
         self.view.endEditing(true)
     }
-    
-//    func saveEmployee() throws {
-//        guard let fullName = fullNameTextField.text, !fullName.isEmpty else {
-//            throw ErrorsToThrow.fullNameNotFound
-//        }
-//
-//        let employee = Employee(context: context)
-//        employee.fullName = fullName
-//        employee.latest = nil
-//        employee.userId = UserDefaults.userUID
-//
-//        do {
-//            try context.save()
-//            print("saved")
-//        } catch {
-//            print("Error saving context \(error)")
-//            throw ErrorsToThrow.canNotSave
-//        }
-//    }
 }

@@ -191,6 +191,7 @@ class SettingsViewController: FormViewController {
                 $0.value = UserDefaults.sortOrder
                 $0.onChange { row in
                     if let newValue = row.value {
+                        print(newValue)
                         UserDefaults.set(sortOrder: newValue)
                     }
                 }
@@ -235,26 +236,20 @@ class SettingsViewController: FormViewController {
                             // Delete account
                             let user = Auth.auth().currentUser
 
-                            user?.delete { error in
-                                if let error = error {
-                                    if let errCode = AuthErrorCode(rawValue: error._code) {
-                                        switch errCode {
-                                        case .requiresRecentLogin:
-                                            self.performSegue(withIdentifier: "showReLogin", sender: self)
-                                        default:
-                                            print(error._code)
-                                            SVProgressHUD.showError(withStatus: error.localizedDescription)
-                                        }
-                                    }
+                            do {
+                                try Auth.auth().signOut()
+                            } catch let signOutError as NSError {
+                                print ("Error signing out: %@", signOutError)
+                            }
+                            
+                            user?.delete(completion: { (error) in
+                                if error != nil {
+                                    SVProgressHUD.showError(withStatus: "Could not delete your user")
                                 } else {
-                                    // Delete data from phone
                                     self.deleteEmployees()
-                                    
-                                    // Delete data from Firebase
-                                    self.deleteFromDatabase()
                                     self.dismiss(animated: true, completion: nil)
                                 }
-                            }
+                            })
                         }
                     }
                 }).cellUpdate({ (cell, row) in
@@ -273,26 +268,14 @@ class SettingsViewController: FormViewController {
                                 print ("Error signing out: %@", signOutError)
                             }
                             
-                            user?.delete { error in
-                                if let error = error {
-                                    if let errCode = AuthErrorCode(rawValue: error._code) {
-                                        switch errCode {
-                                        case .requiresRecentLogin:
-                                            self.performSegue(withIdentifier: "showReLogin", sender: self)
-                                        default:
-                                            print(error._code)
-                                            SVProgressHUD.showError(withStatus: error.localizedDescription)
-                                        }
-                                    }
+                            user?.delete(completion: { (error) in
+                                if error != nil {
+                                    SVProgressHUD.showError(withStatus: "Could not delete your user")
                                 } else {
-                                    // Delete data from phone
                                     self.deleteEmployees()
-                                    
-                                    // Delete data from Firebase
-                                    self.deleteFromDatabase()
                                     self.dismiss(animated: true, completion: nil)
                                 }
-                            }
+                            })
                         }
                     }
                 })
@@ -374,42 +357,70 @@ class SettingsViewController: FormViewController {
     }
     
     private func getNotificationTextCount() -> Int {
-//        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-//        var rv = [Employee]()
         var calendar = Calendar.current
         
         calendar.timeZone = NSTimeZone.local
 
         let dateFrom = calendar.startOfDay(for: Date())
         let dateTo = calendar.date(byAdding: .day, value: -UserDefaults.reminderStartDays - 1, to: dateFrom)
-        let noNotePredicate = NSPredicate(format: "latest == nil AND userId == %@", UserDefaults.userUID)
-        let storeDaysPredicate = NSPredicate(format: "latest <= %@ AND userId == %@", dateTo! as NSDate, UserDefaults.userUID)
-        let datePredicate = NSCompoundPredicate(type: .or, subpredicates: [noNotePredicate, storeDaysPredicate])
-//        let request: NSFetchRequest<Employee> = Employee.fetchRequest()
-//
-//        request.predicate = datePredicate
-
-        let employees = CoreDataManager.shared.getEmployees(predicates: datePredicate, sortedBy: nil) { (error) in
-            if error != nil {
-                print("Error fetching data from context \(error)")
+        var counter = 0
+        
+        let group = DispatchGroup()
+        group.enter()
+        
+        DispatchQueue.global(qos: .default).async {
+            FirebaseManager.shared.getEmployees(uid: UserDefaults.userUID) { (results, error) in
+                if error != nil {
+                } else {
+                    for member in results.members {
+                        if member.comments.count == 0 {
+                            counter += 1
+                        }
+                        
+                        if let latest = member.latest {
+                            if latest <= dateTo! {
+                                counter += 1
+                            }
+                        }
+                    }
+                }
             }
         }
-        
-        if let employees = employees {
-            return employees.count
-        }
-        
-//        do {
-//            rv = try context.fetch(request)
-//            return rv.count
-//        } catch {
-//            print("Error fetching data from context \(error)")
-//        }
 
-        return 0
+        group.wait()
+        
+        return counter
     }
     
     @IBAction func dismissPressed(_ sender: Any) {
+        // Add in the update here
+        let date = UserDefaults.timeManagedReminder
+        let calendar = Calendar.current
+        
+        let objectToSave = [
+            "First_Name": UserDefaults.userFirstName,
+            "Last_Name": UserDefaults.userLastName,
+            "Email": UserDefaults.userEmail,
+            "Phone": UserDefaults.userPhone,
+            "Company": UserDefaults.userCompany,
+            "Number_of_People": UserDefaults.userAmount,
+            "New": true,
+            "UserId": UserDefaults.userUID,
+            "isOrderAscending": UserDefaults.sortOrder,
+            "headerName": UserDefaults.mainTitle,
+            "storeDays": UserDefaults.storeDays,
+            "reminderStartDay": UserDefaults.reminderStartDays,
+            "isReminder": UserDefaults.useTimeManagedReminder,
+            "reminderHours": calendar.component(.hour, from: date!),
+            "reminderMinutes": calendar.component(.minute, from: date!)
+        ] as [String : Any]
+        
+        FirebaseManager.shared.updateSettings(uid: UserDefaults.userUID, data: objectToSave) { (error) in
+            if error != nil {
+                SVProgressHUD.showError(withStatus: "Could not update settings")
+            }
+        }
+
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -442,31 +453,18 @@ class SettingsViewController: FormViewController {
     }
     
     private func deleteEmployees() {
-        let userPredicate = NSPredicate(format: "userId == %@", UserDefaults.userUID)
-        
-        CoreDataManager.shared.deleteAllEmployees(predicate: userPredicate) { (error) in
+        FirebaseManager.shared.getEmployees(uid: UserDefaults.userUID) { (results, error) in
             if error != nil {
-                SVProgressHUD.showError(withStatus: "Something went wrong")
+                
+            } else {
+                FirebaseManager.shared.deleteEmployeesBatch(data: results.members) { (error) in
+                    if error != nil {
+                        print(error?.localizedDescription)
+                    }
+                }
             }
         }
-//        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-//
-//
-//        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Employee")
-//        fetch.predicate = userPredicate
-//        let request = NSBatchDeleteRequest(fetchRequest: fetch)
-//
-//        do {
-//            try context.execute(request)
-//        } catch {
-//
-//        }
-    }
-    
-    private func deleteFromDatabase() {
-        let onlineRef = Database.database().reference(withPath: "clients/\(UserDefaults.userUID)")
         
-        onlineRef.removeValue()
     }
     
     @IBAction func unwindToSettings(segue:UIStoryboardSegue) { }
