@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Firebase
+import FirebaseAuth
 import SVProgressHUD
 
 class RegisterViewController: UIViewController {
@@ -16,9 +16,7 @@ class RegisterViewController: UIViewController {
     @IBOutlet weak var passwordTextField: RiseTextField!
     @IBOutlet weak var confirmTextField: RiseTextField!
     @IBOutlet weak var signUpBtn: RisePrimaryUIButton!
-    
-    var ref: DatabaseReference!
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -40,8 +38,6 @@ class RegisterViewController: UIViewController {
     }
     
     private func registerUser(email: String, password: String) {
-        ref = Database.database().reference()
-        
         Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
             if error != nil {
                 SVProgressHUD.showError(withStatus: error?.localizedDescription)
@@ -60,9 +56,7 @@ class RegisterViewController: UIViewController {
         }
     }
     
-    private func saveUserData(user: Firebase.User) {
-        ref = Database.database().reference()
-        
+    private func saveUserData(user: FirebaseAuth.User) {
         let userDefaults = UserDefaults.standard
         
         UserDefaults.set(userUID: user.uid)
@@ -72,24 +66,28 @@ class RegisterViewController: UIViewController {
         UserDefaults.set(userCompany: userDefaults.string(forKey: "tempCompany") ?? "")
         UserDefaults.set(userEmail: user.email!)
         UserDefaults.set(userAmount: userDefaults.string(forKey: "tempAmountOfPeople") ?? "")
-        UserDefaults.set(userIsNew: true)
+//        UserDefaults.set(userIsNew: true)
+        
+        let date = Date()
+        let calendar = Calendar.current
         
         let objectToSave: [String : Any] = [
-            "Date": [".sv": "timestamp"],
+            "UserId": user.uid,
             "First_Name": UserDefaults.userFirstName,
             "Last_Name": UserDefaults.userLastName,
             "Email": user.email!,
             "Phone": UserDefaults.userPhone,
             "Company": UserDefaults.userCompany,
             "Number_of_People": UserDefaults.userAmount,
-            "New": true
+            "New": true,
+            "isOrderAscending": UserDefaults.sortOrder,
+            "headerName": UserDefaults.mainTitle,
+            "storeDays": UserDefaults.storeDays,
+            "reminderStartDay": UserDefaults.reminderStartDays,
+            "isReminder": UserDefaults.useTimeManagedReminder,
+            "reminderHours": calendar.component(.hour, from: date),
+            "reminderMinutes": calendar.component(.minute, from: date)
         ]
-        
-        self.ref.child("clients").child(user.uid).setValue(objectToSave) { (error, ref) -> Void in
-            if error != nil {
-                SVProgressHUD.showError(withStatus: error?.localizedDescription)
-            }
-        }
         
         FirebaseManager.shared.addSettings(data: objectToSave) { (error) in
             if error != nil {

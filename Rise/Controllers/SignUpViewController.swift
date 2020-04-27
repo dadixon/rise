@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Firebase
 import SVProgressHUD
 
 class SignUpViewController: UIViewController {
@@ -21,7 +20,6 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var continueBtn: RisePrimaryUIButton!
     @IBOutlet weak var loginBtn: RiseSecondaryUIButton!
     
-    var ref: DatabaseReference!
     var amountOfPeoplePickList = [String]()
     
     override func viewDidLoad() {

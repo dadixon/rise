@@ -55,7 +55,20 @@ class ChangeEmailViewController: FormViewController {
                                     }
                                 }
                             } else {
-                                SVProgressHUD.showInfo(withStatus: "Email Updated")
+                                
+                                let objectToSave = [
+                                    "Email": self.confirmedEmail
+                                ] as [String : Any]
+                                
+                                FirebaseManager.shared.updateSettings(uid: UserDefaults.userUID, data: objectToSave) { (error) in
+                                    if error != nil {
+                                        SVProgressHUD.showError(withStatus: "Could not update settings")
+                                    } else {
+                                        UserDefaults.set(userEmail: self.confirmedEmail)
+                                        SVProgressHUD.showSuccess(withStatus: "Email Updated")
+                                        
+                                    }
+                                }
                             }
                         }
                     } else {

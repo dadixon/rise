@@ -26,7 +26,7 @@ struct Defaults {
     static let UserUID = "userUID"
     static let UserEmail = "userEmail"
     static let UserCreatedDate = "userCreatedDate"
-    static let UserIsNew = "userIsNew"
+//    static let UserIsNew = "userIsNew"
 }
 
 extension UserDefaults {
@@ -64,13 +64,6 @@ extension UserDefaults {
     class func set(storeDays: Int) {
         let userDefaults = UserDefaults.standard
         userDefaults.set(storeDays, forKey: Defaults.StoreDays)
-//        if storeDays < 101 {
-//            Utility.deleteAllOldNotes { (error) in
-//                if error != nil {
-//                    print(error?.localizedDescription)
-//                }
-//            }
-//        }
     }
     
     class var reminderStartDays: Int {
@@ -84,7 +77,7 @@ extension UserDefaults {
     
     class var mainTitle: String {
         let userDefaults = UserDefaults.standard
-        return userDefaults.string(forKey: Defaults.MainTitle)!
+        return userDefaults.string(forKey: Defaults.MainTitle) ?? ""
     }
     class func set(mainTitle: String) {
         let userDefaults = UserDefaults.standard
@@ -93,7 +86,7 @@ extension UserDefaults {
     
     class var userFirstName: String {
         let userDefaults = UserDefaults.standard
-        return userDefaults.string(forKey: Defaults.UserFirstName)!
+        return userDefaults.string(forKey: Defaults.UserFirstName) ?? ""
     }
     class func set(userFirstName: String) {
         let userDefaults = UserDefaults.standard
@@ -102,7 +95,7 @@ extension UserDefaults {
     
     class var userLastName: String {
         let userDefaults = UserDefaults.standard
-        return userDefaults.string(forKey: Defaults.UserLastName)!
+        return userDefaults.string(forKey: Defaults.UserLastName) ?? ""
     }
     class func set(userLastName: String) {
         let userDefaults = UserDefaults.standard
@@ -111,7 +104,7 @@ extension UserDefaults {
     
     class var userPhone: String {
         let userDefaults = UserDefaults.standard
-        return userDefaults.string(forKey: Defaults.UserPhone)!
+        return userDefaults.string(forKey: Defaults.UserPhone) ?? ""
     }
     class func set(userPhone: String) {
         let userDefaults = UserDefaults.standard
@@ -120,7 +113,7 @@ extension UserDefaults {
     
     class var userCompany: String {
         let userDefaults = UserDefaults.standard
-        return userDefaults.string(forKey: Defaults.UserCompany)!
+        return userDefaults.string(forKey: Defaults.UserCompany) ?? ""
     }
     class func set(userCompany: String) {
         let userDefaults = UserDefaults.standard
@@ -129,7 +122,7 @@ extension UserDefaults {
     
     class var userAmount: String {
         let userDefaults = UserDefaults.standard
-        return userDefaults.string(forKey: Defaults.UserAmount)!
+        return userDefaults.string(forKey: Defaults.UserAmount) ?? ""
     }
     class func set(userAmount: String) {
         let userDefaults = UserDefaults.standard
@@ -147,7 +140,7 @@ extension UserDefaults {
     
     class var userEmail: String {
         let userDefaults = UserDefaults.standard
-        return userDefaults.string(forKey: Defaults.UserEmail)!
+        return userDefaults.string(forKey: Defaults.UserEmail) ?? ""
     }
     class func set(userEmail: String) {
         let userDefaults = UserDefaults.standard
@@ -163,12 +156,12 @@ extension UserDefaults {
         userDefaults.set(userCreatedDate, forKey: Defaults.UserCreatedDate)
     }
     
-    class var userIsNew: Bool {
-        let userDefaults = UserDefaults.standard
-        return userDefaults.bool(forKey: Defaults.UserIsNew)
-    }
-    class func set(userIsNew: Bool) {
-        let userDefaults = UserDefaults.standard
-        userDefaults.set(userIsNew, forKey: Defaults.UserIsNew)
-    }
+//    class var userIsNew: Bool {
+//        let userDefaults = UserDefaults.standard
+//        return userDefaults.bool(forKey: Defaults.UserIsNew)
+//    }
+//    class func set(userIsNew: Bool) {
+//        let userDefaults = UserDefaults.standard
+//        userDefaults.set(userIsNew, forKey: Defaults.UserIsNew)
+//    }
 }

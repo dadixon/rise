@@ -28,6 +28,7 @@
 		A46EDF53218343F100C37CD6 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A46EDF52218343F100C37CD6 /* Settings.storyboard */; };
 		A46EDF5521834BE900C37CD6 /* Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46EDF5421834BE900C37CD6 /* Defaults.swift */; };
 		A48F512A21B01001005ED374 /* RiseUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A48F512921B01001005ED374 /* RiseUser.swift */; };
+		A4A7255C242DFE7C00A8A374 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A7255B242DFE7C00A8A374 /* Notifications.swift */; };
 		A4B56EC8214DDC5400D74FE5 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B56EC7214DDC5400D74FE5 /* Utility.swift */; };
 		A4B5D5332146F29C00A46D00 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B5D5322146F29C00A46D00 /* AppDelegate.swift */; };
 		A4B5D5382146F29C00A46D00 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A4B5D5362146F29C00A46D00 /* Main.storyboard */; };
@@ -78,6 +79,7 @@
 		A46EDF52218343F100C37CD6 /* Settings.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
 		A46EDF5421834BE900C37CD6 /* Defaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defaults.swift; sourceTree = "<group>"; };
 		A48F512921B01001005ED374 /* RiseUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiseUser.swift; sourceTree = "<group>"; };
+		A4A7255B242DFE7C00A8A374 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		A4B56EC7214DDC5400D74FE5 /* Utility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
 		A4B5D52F2146F29C00A46D00 /* Rise.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rise.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4B5D5322146F29C00A46D00 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				A425583823FF87F100179453 /* Member.swift */,
 				A425583A23FF898A00179453 /* Comment.swift */,
 				A425583C240065D200179453 /* Library.swift */,
+				A4A7255B242DFE7C00A8A374 /* Notifications.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -395,6 +398,7 @@
 				A48F512A21B01001005ED374 /* RiseUser.swift in Sources */,
 				A425583B23FF898A00179453 /* Comment.swift in Sources */,
 				A4EF60BB214A2B9E00F1E673 /* EmployeesTableViewController.swift in Sources */,
+				A4A7255C242DFE7C00A8A374 /* Notifications.swift in Sources */,
 				A46EDF5521834BE900C37CD6 /* Defaults.swift in Sources */,
 				A4F5244223D61A4500600B3B /* CoreDataManager.swift in Sources */,
 				A40FD40721AD585E00EDF81C /* GeneralViewController.swift in Sources */,
@@ -542,15 +546,17 @@
 			baseConfigurationReference = 79E9A1CE4355A7CB591AB86E /* Pods-Rise.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 5H9J7C2J3D;
 				INFOPLIST_FILE = Rise/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.myemployees.Rise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -563,15 +569,17 @@
 			baseConfigurationReference = 6DEC385AB7EB032C83F223F5 /* Pods-Rise.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 5H9J7C2J3D;
 				INFOPLIST_FILE = Rise/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.4.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.myemployees.Rise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

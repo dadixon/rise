@@ -45,6 +45,10 @@ class EmployeesTableViewController: UITableViewController {
         self.tableView.reloadData()
         
         Auth.auth().addStateDidChangeListener({ (auth, user) in
+            guard let _ = auth.currentUser else {
+                self.performSegue(withIdentifier: "viewLogin", sender: nil)
+                return
+            }
             guard let user = user else {
                 self.performSegue(withIdentifier: "viewLogin", sender: nil)
                 return
@@ -57,14 +61,15 @@ class EmployeesTableViewController: UITableViewController {
             
             self.user = user
             self.migration(id: self.user.uid)
-            self.getMembers()
+            
             
             FirebaseManager.shared.getSettings(uid: user.uid) { (error) in
                 if error != nil {
                     
+                } else {
+                    self.title = UserDefaults.mainTitle
+                    self.getMembers()
                 }
-                
-//                print(UserDefaults.timeManagedReminder)
             }
         })
     }
@@ -93,14 +98,16 @@ class EmployeesTableViewController: UITableViewController {
                 SVProgressHUD.dismiss()
                 SVProgressHUD.showError(withStatus: "There was a problem getting your data")
             } else {
-                Utility.deleteAllOldNotes(members: results.members) { (error) in
-                    if error != nil {
-                        print(error?.localizedDescription)
-                    } else {
-                        self.members = Utility.sortByLatestComment(members: results.members)
-                        self.tableView.reloadData()
-                        self.resetTable(members: self.members)
-                        SVProgressHUD.dismiss()
+                if UserDefaults.storeDays < 101 {
+                    Utility.deleteAllOldNotes(members: results.members) { (error) in
+                        if error != nil {
+                            print(error?.localizedDescription)
+                        } else {
+                            self.members = Utility.sortByLatestComment(members: results.members)
+                            self.tableView.reloadData()
+                            self.resetTable(members: self.members)
+                            SVProgressHUD.dismiss()
+                        }
                     }
                 }
             }
@@ -133,6 +140,7 @@ class EmployeesTableViewController: UITableViewController {
     
     @IBAction func unwindToEmployeesDashboard(segue:UIStoryboardSegue) {
         self.title = UserDefaults.mainTitle
+        self.getMembers()
     }
     
     // MARK: - Table view data source
@@ -365,6 +373,35 @@ class EmployeesTableViewController: UITableViewController {
                     
                     members.append(Member(id: id, fullName: employee.fullName!, latest: nil, comments: []))
                 }
+                
+                if employees.count > 0 {
+                    // Move Settings over to new database
+                    let date = UserDefaults.timeManagedReminder
+                    let calendar = Calendar.current
+                    let objectToSave = [
+                        "First_Name": UserDefaults.userFirstName,
+                        "Last_Name": UserDefaults.userLastName,
+                        "Email": UserDefaults.userEmail,
+                        "Phone": UserDefaults.userPhone,
+                        "Company": UserDefaults.userCompany,
+                        "Number_of_People": UserDefaults.userAmount,
+//                        "New": false,
+                        "UserId": UserDefaults.userUID,
+                        "isOrderAscending": UserDefaults.sortOrder,
+                        "headerName": UserDefaults.mainTitle,
+                        "storeDays": UserDefaults.storeDays,
+                        "reminderStartDay": UserDefaults.reminderStartDays,
+                        "isReminder": UserDefaults.useTimeManagedReminder,
+                        "reminderHours": calendar.component(.hour, from: date!),
+                        "reminderMinutes": calendar.component(.minute, from: date!)
+                    ] as [String : Any]
+                    
+                    FirebaseManager.shared.updateSettings(uid: UserDefaults.userUID, data: objectToSave) { (error) in
+                        if error != nil {
+                            print(error?.localizedDescription)
+                        }
+                    }
+                }
             }
             
             for member in members {
@@ -382,13 +419,15 @@ class EmployeesTableViewController: UITableViewController {
                             if error != nil {
                                 print(error?.localizedDescription)
                             } else {
-                                Utility.deleteAllOldNotes(members: results.members) { (error) in
-                                    if error != nil {
-                                        print(error?.localizedDescription)
-                                    } else {
-                                        CoreDataManager.shared.deleteAllEmployees(predicate: nil) { (error) in
-                                            if error != nil {
-                                                print(error?.localizedDescription)
+                                if UserDefaults.storeDays < 101 {
+                                    Utility.deleteAllOldNotes(members: results.members) { (error) in
+                                        if error != nil {
+                                            print(error?.localizedDescription)
+                                        } else {
+                                            CoreDataManager.shared.deleteAllEmployees(predicate: nil) { (error) in
+                                                if error != nil {
+                                                    print(error?.localizedDescription)
+                                                }
                                             }
                                         }
                                     }

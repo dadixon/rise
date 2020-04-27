@@ -125,73 +125,43 @@ class GeneralViewController: FormViewController {
     }
     
     private func getGeneralData() {
-        ref = Database.database().reference()
-        ref.child("clients").child(UserDefaults.userUID).observeSingleEvent(of: .value, with: { (snapshot) in
-            guard let values = snapshot.value as? [String: Any] else {
-                return
-            }
-
-            print(values)
-            let value = snapshot.value as? NSDictionary
-            self.firstName = value?["First_Name"] as? String ?? ""
-            self.lastName = value?["Last_Name"] as? String ?? ""
-            self.phone = value?["Phone"] as? String ?? ""
-            self.company = value?["Company"] as? String ?? ""
-            self.email = value?["Email"] as? String ?? ""
-            self.createdDate = (value?["Date"] as? NSNumber)!
-            self.newUser = (value?["New"] as? Bool)!
-            self.amountOfPeople = value?["Number_of_People"] as? String ?? ""
-
-        }) { (error) in
-            print(error.localizedDescription)
-        }
+        self.firstName = UserDefaults.userFirstName
+        self.lastName = UserDefaults.userLastName
+        self.phone = UserDefaults.userPhone
+        self.company = UserDefaults.userCompany
+        self.amountOfPeople = UserDefaults.userAmount
     }
     
     private func saveGeneralData() {
-        ref = Database.database().reference()
-        
         guard self.firstName != "" else {
             SVProgressHUD.showError(withStatus: "Please enter a first name")
             return
         }
-        
+
         guard self.lastName != "" else {
             SVProgressHUD.showError(withStatus: "Please enter a last name")
             return
         }
-        
+
         guard self.phone != "" else {
             SVProgressHUD.showError(withStatus: "Please enter a phone number")
             return
         }
-        
+
         guard self.company != "" else {
             SVProgressHUD.showError(withStatus: "Please enter a company name")
             return
         }
-        
+
         guard self.amountOfPeople != "" else {
             SVProgressHUD.showError(withStatus: "Please select an amount")
             return
         }
-        
+
         UserDefaults.set(userFirstName: firstName)
         UserDefaults.set(userLastName: lastName)
         UserDefaults.set(userPhone: phone)
         UserDefaults.set(userCompany: company)
         UserDefaults.set(userAmount: amountOfPeople)
-        
-        let post: [String : Any] = [
-            "Date": self.createdDate,
-            "First_Name": firstName,
-            "Last_Name": lastName,
-            "Email": self.email,
-            "Phone": phone,
-            "Company": company,
-            "Number_of_People": amountOfPeople,
-            "New": self.newUser
-            ]
-        let childUpdates = ["/clients/\(UserDefaults.userUID)": post]
-        ref.updateChildValues(childUpdates)
     }
 }

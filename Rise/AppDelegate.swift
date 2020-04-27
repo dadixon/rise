@@ -20,32 +20,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         FirebaseApp.configure()
+
+        UserDefaults.set(timeManagedReminder: Date())
+        UserDefaults.set(useTimeManagedReminder: false)
+        UserDefaults.set(reminderStartDays: 10)
+        UserDefaults.set(storeDays: 60)
+        UserDefaults.set(sortOrder: false)
+        UserDefaults.set(mainTitle: "Employees")
         
-//        print(Date())
-//
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ssz"
-//        let dateString = dateFormatter.string(from: Date())
-//        print(dateString)
-//        print(dateFormatter.date(from: dateString))
-        
-        let userDefaults = UserDefaults.standard
-        
-        if userDefaults.string(forKey: Defaults.SortOrder) == nil {
-            UserDefaults.set(sortOrder: false)
-        }
-        
-        if userDefaults.string(forKey: Defaults.MainTitle) == nil {
-            UserDefaults.set(mainTitle: "Employees")
-        }
-        
-        if userDefaults.integer(forKey: Defaults.StoreDays) == 0 {
-            UserDefaults.set(storeDays: 60)
-        }
-        
-        if userDefaults.integer(forKey: Defaults.ReminderStartDays) == 0 {
-            UserDefaults.set(reminderStartDays: 10)
-        }
         
         return true
     }

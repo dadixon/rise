@@ -20,7 +20,7 @@ class RiseUser {
     var companyName: String
     var amountOfPeople: String
     var createdDate: NSNumber
-    var isNew: Bool
+//    var isNew: Bool
     
     private init() {
         self.id = UserDefaults.userUID
@@ -31,7 +31,7 @@ class RiseUser {
         self.companyName = UserDefaults.userCompany
         self.amountOfPeople = UserDefaults.userAmount
         self.createdDate = 0
-        self.isNew = true
+//        self.isNew = true
     }
     
 }

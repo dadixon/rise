@@ -97,11 +97,10 @@ class Utility {
     static func sortByLatestComment(members: [Member]) -> [Member] {
         var rv = [Member]()
         var tempMembers = [Member]()
-        var noComments = [Member]()
         
         for member in members {
             if member.latest == nil {
-                noComments.append(member)
+                rv.append(member)
             } else {
                 tempMembers.append(member)
             }
